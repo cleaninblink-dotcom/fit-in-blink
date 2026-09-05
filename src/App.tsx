@@ -30,6 +30,7 @@ import { InstallAppModal } from './components/InstallAppModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { CycleCountdownBar } from './components/CycleCountdownBar';
 import { AutoWorkoutPlayer } from './components/AutoWorkoutPlayer';
+import { GoogleAdUnit } from './components/GoogleAdUnit';
 import { usePWAInstall } from './hooks/usePWAInstall';
 
 export default function App() {
@@ -356,6 +357,9 @@ export default function App() {
             onUpdateGoal={handleGoalChange}
           />
         )}
+
+        {/* Google AdSense Ad Unit */}
+        <GoogleAdUnit />
       </main>
 
       {/* Automated Workout Routine Engine (Auto Sets with 15s Recovery Breaks) */}
