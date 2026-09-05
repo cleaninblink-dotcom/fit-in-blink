@@ -1,0 +1,2 @@
+# Netlify SPA Redirects Rule (copies to dist/_redirects for Netlify Drop & Static hosting)
+/*    /index.html   200

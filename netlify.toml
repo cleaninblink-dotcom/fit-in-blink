@@ -1,0 +1,51 @@
+# Netlify Configuration for Fit in Blink (Vite + React + PWA)
+[build]
+  # Directory that contains the deploy-ready files after build
+  publish = "dist"
+  # Build command executed by Netlify
+  command = "npm run build"
+
+[build.environment]
+  # Ensure Node 20 LTS is used during the Netlify build process
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Single-Page Application (SPA) routing fallback rule
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache control for PWA Service Worker (must revalidate immediately)
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[headers]]
+  for = "/workbox-*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript; charset=utf-8"
+
+# Cache control for web app manifest
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/manifest+json; charset=utf-8"
+
+# Immutable caching for hashed production assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Security and performance headers across all paths
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
