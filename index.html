@@ -2,6 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Gracefully handle benign Vite HMR websocket connection messages in container preview
+      (function() {
+        var origError = console.error;
+        console.error = function() {
+          var firstArg = arguments[0];
+          if (typeof firstArg === 'string' && firstArg.indexOf('[vite]') !== -1) {
+            console.debug.apply(console, arguments);
+            return;
+          }
+          origError.apply(console, arguments);
+        };
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Fit in Blink | Smart Fitness & Macro Targets</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
