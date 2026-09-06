@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, Activity, Target, Flame, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Check, Activity, Target, Flame, ArrowRight, Sparkles, Scale } from 'lucide-react';
 import { UserProfile, WeightUnit, HeightUnit, Gender, Goal, ActivityLevel } from '../types';
 
 interface MetricsModalProps {
@@ -8,6 +8,7 @@ interface MetricsModalProps {
   profile: UserProfile;
   onSave: (updatedProfile: UserProfile) => void;
   isOnboarding?: boolean;
+  onOpenBmi?: () => void;
 }
 
 export const MetricsModal: React.FC<MetricsModalProps> = ({
@@ -16,6 +17,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   profile,
   onSave,
   isOnboarding = false,
+  onOpenBmi,
 }) => {
   const [weight, setWeight] = useState<number>(profile.weight);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(profile.weightUnit);
@@ -86,23 +88,23 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
       <div 
         id="metrics-modal-card"
-        className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl shadow-2xl shadow-slate-950/20 overflow-hidden my-6 transition-all"
+        className="w-full max-w-xl bg-[#161616] border border-[#282828] rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden my-6 transition-all text-slate-100"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-6 py-5 border-b border-[#282828] flex items-center justify-between bg-[#141414]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-lime-100 text-lime-800 border border-lime-300">
+              <span className="p-1.5 rounded-lg bg-[#14281a] text-[#00FF66] border border-[#00FF66]/30">
                 <Sparkles className="w-4 h-4" />
               </span>
-              <h2 className="text-base font-bold text-slate-950 tracking-tight uppercase">
+              <h2 className="text-base font-black text-white tracking-tight uppercase font-heading">
                 {isOnboarding ? 'Welcome to Fit in Blink' : 'Update Your Physical Profile'}
               </h2>
             </div>
-            <p className="text-xs text-slate-600 mt-1 font-medium">
+            <p className="text-xs text-slate-400 mt-1 font-medium">
               {isOnboarding 
                 ? 'Enter your baseline metrics to calculate exact Mifflin-St Jeor macros and generate your routine.'
                 : 'Adjust your metrics anytime to immediately recalculate macros and volume.'}
@@ -112,7 +114,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
             <button
               id="close-metrics-modal-btn"
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-[#252525] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -126,15 +128,15 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
             {/* Weight */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="input-weight" className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                <label htmlFor="input-weight" className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                   Current Weight
                 </label>
-                <div className="flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-[11px]">
+                <div className="flex rounded-lg bg-[#1f1f1f] p-0.5 border border-[#333333] text-[11px] font-mono">
                   <button
                     type="button"
                     onClick={() => handleUnitWeightChange('kg')}
                     className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      weightUnit === 'kg' ? 'bg-white text-slate-950 font-black shadow-xs' : 'text-slate-600'
+                      weightUnit === 'kg' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     kg
@@ -143,7 +145,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                     type="button"
                     onClick={() => handleUnitWeightChange('lbs')}
                     className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      weightUnit === 'lbs' ? 'bg-white text-slate-950 font-black shadow-xs' : 'text-slate-600'
+                      weightUnit === 'lbs' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     lbs
@@ -159,10 +161,10 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                   value={weight || ''}
                   onChange={(e) => setWeight(Number(e.target.value))}
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-lime-500 focus:bg-white text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
                   placeholder={weightUnit === 'kg' ? '75' : '165'}
                 />
-                <span className="absolute right-3.5 top-2.5 text-xs text-slate-500 font-mono font-medium pointer-events-none">
+                <span className="absolute right-3.5 top-2.5 text-xs text-slate-400 font-mono font-medium pointer-events-none">
                   {weightUnit}
                 </span>
               </div>
@@ -171,15 +173,15 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
             {/* Height */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                   Height
                 </label>
-                <div className="flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-[11px]">
+                <div className="flex rounded-lg bg-[#1f1f1f] p-0.5 border border-[#333333] text-[11px] font-mono">
                   <button
                     type="button"
                     onClick={() => handleUnitHeightChange('cm')}
                     className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      heightUnit === 'cm' ? 'bg-white text-slate-950 font-black shadow-xs' : 'text-slate-600'
+                      heightUnit === 'cm' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     cm
@@ -188,7 +190,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                     type="button"
                     onClick={() => handleUnitHeightChange('ft')}
                     className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      heightUnit === 'ft' ? 'bg-white text-slate-950 font-black shadow-xs' : 'text-slate-600'
+                      heightUnit === 'ft' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     ft/in
@@ -206,10 +208,10 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                     value={heightCm || ''}
                     onChange={(e) => setHeightCm(Number(e.target.value))}
                     required
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-lime-500 focus:bg-white text-sm"
+                    className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
                     placeholder="178"
                   />
-                  <span className="absolute right-3.5 top-2.5 text-xs text-slate-500 font-mono font-medium pointer-events-none">
+                  <span className="absolute right-3.5 top-2.5 text-xs text-slate-400 font-mono font-medium pointer-events-none">
                     cm
                   </span>
                 </div>
@@ -224,10 +226,10 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                       value={heightFeet || ''}
                       onChange={(e) => setHeightFeet(Number(e.target.value))}
                       required
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-lime-500 focus:bg-white text-sm"
+                      className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
                       placeholder="5"
                     />
-                    <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-mono font-medium">ft</span>
+                    <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono font-medium">ft</span>
                   </div>
                   <div className="relative">
                     <input
@@ -238,21 +240,60 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                       value={heightInches || ''}
                       onChange={(e) => setHeightInches(Number(e.target.value))}
                       required
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-lime-500 focus:bg-white text-sm"
+                      className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
                       placeholder="10"
                     />
-                    <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-mono font-medium">in</span>
+                    <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono font-medium">in</span>
                   </div>
                 </div>
               )}
             </div>
           </div>
 
+          {/* Quick BMI Preview & Deep-Dive Link */}
+          {(() => {
+            const currentWeightKg = weightUnit === 'lbs' ? weight * 0.45359237 : weight;
+            const currentHeightCm = heightUnit === 'ft' ? (heightFeet * 12 + heightInches) * 2.54 : heightCm;
+            const currentBmiVal = Number((currentWeightKg / Math.pow(Math.max(0.5, currentHeightCm / 100), 2)).toFixed(1));
+            const isNormal = currentBmiVal >= 18.5 && currentBmiVal <= 24.9;
+            return (
+              <div className="flex items-center justify-between p-2.5 bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl text-xs">
+                <div className="flex items-center gap-2 font-mono">
+                  <Scale className="w-3.5 h-3.5 text-[#00FF66] shrink-0" />
+                  <span className="text-slate-400 font-medium">Current BMI:</span>
+                  <span className="font-bold text-white">{currentBmiVal} kg/m²</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    isNormal 
+                      ? 'bg-[#14281a] text-[#00FF66] border-[#00FF66]/30' 
+                      : currentBmiVal < 18.5 
+                      ? 'bg-sky-950/60 text-sky-400 border-sky-600/30' 
+                      : 'bg-amber-950/60 text-amber-400 border-amber-600/30'
+                  }`}>
+                    {isNormal ? 'Normal' : currentBmiVal < 18.5 ? 'Underweight' : 'Overweight'}
+                  </span>
+                </div>
+                {onOpenBmi && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenBmi();
+                    }}
+                    className="text-[#00FF66] hover:text-[#00e65c] font-bold flex items-center gap-1 cursor-pointer transition-colors font-mono"
+                  >
+                    <span>Check Full BMI</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+
           {/* Age and Sex Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Age */}
             <div className="space-y-1.5">
-              <label htmlFor="input-age" className="text-xs font-bold uppercase tracking-wider text-slate-600">
+              <label htmlFor="input-age" className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
                 Age (Years)
               </label>
               <input
@@ -263,28 +304,28 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                 value={age || ''}
                 onChange={(e) => setAge(Number(e.target.value))}
                 required
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-lime-500 focus:bg-white text-sm"
+                className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
                 placeholder="26"
               />
             </div>
 
             {/* Sex (for Mifflin-St Jeor accuracy) */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                Biological Sex <span className="text-[10px] text-slate-400 lowercase font-normal">(for BMR calculation)</span>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                Biological Sex <span className="text-[10px] text-slate-500 lowercase font-normal">(for BMR)</span>
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 font-mono">
                 <button
                   type="button"
                   id="gender-male-btn"
                   onClick={() => setGender('male')}
                   className={`py-2.5 px-3 rounded-xl border text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     gender === 'male'
-                      ? 'border-lime-500 bg-lime-50 text-lime-900 ring-1 ring-lime-400 font-black'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'border-[#00FF66] bg-[#14281a] text-[#00FF66] ring-1 ring-[#00FF66] font-black'
+                      : 'border-[#333333] bg-[#1a1a1a] text-slate-400 hover:border-[#444444] hover:bg-[#222222]'
                   }`}
                 >
-                  {gender === 'male' && <Check className="w-3.5 h-3.5 text-lime-700" />}
+                  {gender === 'male' && <Check className="w-3.5 h-3.5 text-[#00FF66]" />}
                   Male
                 </button>
                 <button
@@ -293,11 +334,11 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                   onClick={() => setGender('female')}
                   className={`py-2.5 px-3 rounded-xl border text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     gender === 'female'
-                      ? 'border-lime-500 bg-lime-50 text-lime-900 ring-1 ring-lime-400 font-black'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'border-[#00FF66] bg-[#14281a] text-[#00FF66] ring-1 ring-[#00FF66] font-black'
+                      : 'border-[#333333] bg-[#1a1a1a] text-slate-400 hover:border-[#444444] hover:bg-[#222222]'
                   }`}
                 >
-                  {gender === 'female' && <Check className="w-3.5 h-3.5 text-lime-700" />}
+                  {gender === 'female' && <Check className="w-3.5 h-3.5 text-[#00FF66]" />}
                   Female
                 </button>
               </div>
@@ -307,15 +348,15 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
           {/* Daily Workout Duration */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-lime-600" />
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-mono">
+                <Activity className="w-3.5 h-3.5 text-[#00FF66]" />
                 <span>Daily Workout Duration</span>
               </label>
-              <span className="text-xs font-mono font-bold text-lime-800 bg-lime-100 px-2 py-0.5 rounded-full border border-lime-300">
+              <span className="text-xs font-mono font-bold text-[#00FF66] bg-[#14281a] px-2 py-0.5 rounded-full border border-[#00FF66]/30">
                 {workoutDuration >= 60 ? `${workoutDuration / 60} Hour${workoutDuration > 60 ? 's' : ''}` : `${workoutDuration} Mins`}
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono">
               {durationOptions.map((opt) => {
                 const isSel = workoutDuration === opt.value;
                 return (
@@ -326,12 +367,12 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                     onClick={() => setWorkoutDuration(opt.value)}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                       isSel
-                        ? 'border-lime-500 bg-lime-50 text-slate-950 shadow-xs ring-1 ring-lime-400'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'border-[#00FF66] bg-[#14281a] text-white shadow-[0_0_10px_rgba(0,255,102,0.2)] ring-1 ring-[#00FF66]'
+                        : 'border-[#2d2d2d] bg-[#1a1a1a] text-slate-400 hover:border-[#3a3a3a] hover:bg-[#202020]'
                     }`}
                   >
-                    <div className="text-xs font-bold text-slate-900">{opt.label}</div>
-                    <div className="text-[10px] text-slate-500 line-clamp-1 leading-tight mt-0.5 font-medium">
+                    <div className="text-xs font-bold text-white">{opt.label}</div>
+                    <div className="text-[10px] text-slate-400 line-clamp-1 leading-tight mt-0.5 font-medium">
                       {opt.desc}
                     </div>
                   </button>
@@ -342,8 +383,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
           {/* Nutrition Goal */}
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-cyan-600" />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-mono">
+              <Target className="w-3.5 h-3.5 text-[#FF5500]" />
               <span>Nutrition & Caloric Target Goal</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -353,14 +394,14 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                 onClick={() => setGoal('maintenance')}
                 className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   goal === 'maintenance'
-                    ? 'border-lime-500 bg-lime-50 text-slate-950 shadow-xs ring-1 ring-lime-400'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'border-[#00FF66] bg-[#14281a] text-white shadow-[0_0_10px_rgba(0,255,102,0.2)] ring-1 ring-[#00FF66]'
+                    : 'border-[#2d2d2d] bg-[#1a1a1a] text-slate-400 hover:border-[#3a3a3a] hover:bg-[#202020]'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                <div className="text-xs font-bold text-white flex items-center gap-1 font-heading">
                   Healthy Maintenance
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
+                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">
                   100% TDEE • Sustainable energy & muscle retention
                 </div>
               </button>
@@ -371,14 +412,14 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                 onClick={() => setGoal('gentle_deficit')}
                 className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   goal === 'gentle_deficit'
-                    ? 'border-lime-500 bg-lime-50 text-slate-950 shadow-xs ring-1 ring-lime-400'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'border-[#FF5500] bg-[#2a1710] text-white shadow-[0_0_10px_rgba(255,85,0,0.25)] ring-1 ring-[#FF5500]'
+                    : 'border-[#2d2d2d] bg-[#1a1a1a] text-slate-400 hover:border-[#3a3a3a] hover:bg-[#202020]'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                <div className="text-xs font-bold text-[#FF5500] flex items-center gap-1 font-heading">
                   Gentle Fat Loss
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
+                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">
                   -300 kcal deficit • Non-restrictive, protects muscle
                 </div>
               </button>
@@ -389,14 +430,14 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                 onClick={() => setGoal('muscle_gain')}
                 className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   goal === 'muscle_gain'
-                    ? 'border-lime-500 bg-lime-50 text-slate-950 shadow-xs ring-1 ring-lime-400'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'border-[#00FF66] bg-[#14281a] text-white shadow-[0_0_10px_rgba(0,255,102,0.2)] ring-1 ring-[#00FF66]'
+                    : 'border-[#2d2d2d] bg-[#1a1a1a] text-slate-400 hover:border-[#3a3a3a] hover:bg-[#202020]'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                <div className="text-xs font-bold text-[#00FF66] flex items-center gap-1 font-heading">
                   Lean Muscle Gain
                 </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
+                <div className="text-[11px] text-slate-400 mt-0.5 font-medium">
                   +250 kcal surplus • Fuels progressive overload
                 </div>
               </button>
@@ -405,8 +446,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
           {/* Activity Level */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-amber-600" />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-mono">
+              <Flame className="w-3.5 h-3.5 text-[#FF5500]" />
               <span>General Daily Activity Level</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -422,25 +463,25 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                   onClick={() => setActivityLevel(act.id as ActivityLevel)}
                   className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                     activityLevel === act.id
-                      ? 'border-lime-500 bg-lime-50 text-lime-900 ring-1 ring-lime-400 font-bold'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'border-[#00FF66] bg-[#14281a] text-[#00FF66] ring-1 ring-[#00FF66] font-bold'
+                      : 'border-[#2d2d2d] bg-[#1a1a1a] text-slate-400 hover:border-[#3a3a3a] hover:bg-[#202020]'
                   }`}
                 >
-                  <div className="text-xs font-bold text-slate-900">{act.label}</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5 font-medium">{act.desc}</div>
+                  <div className="text-xs font-bold text-white">{act.label}</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5 font-medium">{act.desc}</div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Submit / Save button */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-3">
+          <div className="pt-3 border-t border-[#282828] flex items-center justify-end gap-3">
             {!isOnboarding && (
               <button
                 type="button"
                 id="cancel-metrics-btn"
                 onClick={onClose}
-                className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white rounded-xl hover:bg-[#252525] transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -448,10 +489,10 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
             <button
               type="submit"
               id="save-metrics-submit-btn"
-              className="w-full sm:w-auto px-6 py-2.5 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black uppercase tracking-wider rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#00FF66] hover:bg-[#00e65c] text-black font-black uppercase tracking-wider rounded-xl text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,255,102,0.4)] transition-all cursor-pointer"
             >
               <span>{isOnboarding ? 'Generate Plan in a Blink' : 'Update Plan & Recalculate'}</span>
-              <ArrowRight className="w-4 h-4 text-slate-950 stroke-[3]" />
+              <ArrowRight className="w-4 h-4 text-black stroke-[3]" />
             </button>
           </div>
         </form>

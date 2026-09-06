@@ -10,13 +10,15 @@ import {
   Sparkles,
   Layers,
   ArrowDown,
-  Download
+  Download,
+  Mic
 } from 'lucide-react';
 import { UserProfile, Goal } from './types';
 import { SEVEN_DAY_ROTATION, generateDailyWorkoutPlan } from './utils/workouts';
 import { calculateMacros } from './utils/nutrition';
 import { useFitness } from './context/FitnessContext';
 import { Header } from './components/Header';
+import { SectionNavTabs, ActiveViewType } from './components/SectionNavTabs';
 import { OnboardingFlow } from './components/OnboardingFlow';
 import { TodaysPlanOverview } from './components/TodaysPlanOverview';
 import { DailyBanner } from './components/DailyBanner';
@@ -31,7 +33,11 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { CycleCountdownBar } from './components/CycleCountdownBar';
 import { AutoWorkoutPlayer } from './components/AutoWorkoutPlayer';
 import { GoogleAdUnit } from './components/GoogleAdUnit';
+import { FitnessGuideSection } from './components/FitnessGuideSection';
+import { LiveVoiceCoach } from './components/LiveVoiceCoach';
+import { BmiModal } from './components/BmiModal';
 import { usePWAInstall } from './hooks/usePWAInstall';
+import { Compass } from 'lucide-react';
 
 export default function App() {
   // 1. Centralized State Management via FitnessContext
@@ -64,10 +70,14 @@ export default function App() {
   }, [cycleStatus.activeDayId, hasManuallyBrowsedOtherDay]);
 
   // 3. Modals & Interactive States
-  const [isMetricsModalOpen, setIsMetricsModalOpen] = useState<boolean>(false);
+  // Default isMetricsModalOpen to true so the weight/metrics section is always open when the app launches
+  const [isMetricsModalOpen, setIsMetricsModalOpen] = useState<boolean>(true);
+  const [isBmiModalOpen, setIsBmiModalOpen] = useState<boolean>(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState<boolean>(false);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
   const [isWorkoutActive, setIsWorkoutActive] = useState<boolean>(false);
+  const [isVoiceCoachOpen, setIsVoiceCoachOpen] = useState<boolean>(false);
+  const [voiceCoachInitialTopic, setVoiceCoachInitialTopic] = useState<string>('');
 
   // Auto-Progression Workout Player State
   const [isAutoPlayerOpen, setIsAutoPlayerOpen] = useState<boolean>(false);
@@ -109,7 +119,7 @@ export default function App() {
   const [completedDayIds, setCompletedDayIds] = useState<number[]>([]);
 
   // Navigation tab view (or combined)
-  const [activeView, setActiveView] = useState<'all' | 'workout' | 'nutrition'>('all');
+  const [activeView, setActiveView] = useState<'all' | 'workout' | 'nutrition' | 'guide'>('all');
 
   // Re-run onboarding state
   const [isReRunningOnboarding, setIsReRunningOnboarding] = useState<boolean>(false);
@@ -213,154 +223,363 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-lime-300 selection:text-slate-950">
+    <div className="min-h-screen bg-[#121212] text-slate-100 flex flex-col selection:bg-[#00FF66] selection:text-black">
       {/* 1. Header Navigation */}
       <Header
         profile={profile}
         onOpenMetrics={() => setIsMetricsModalOpen(true)}
+        onOpenBmi={() => setIsBmiModalOpen(true)}
         onDurationChange={handleDurationChange}
         onResetToDemo={handleResetToDemo}
         onRestartOnboarding={() => setIsReRunningOnboarding(true)}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
+        onOpenVoiceCoach={() => setIsVoiceCoachOpen(true)}
+      />
+
+      {/* 2. Primary 4-Section Navigation Bar (Sticky, Viewable, High-Energy) */}
+      <SectionNavTabs
+        activeView={activeView}
+        onSelectView={(view) => {
+          setActiveView(view);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        durationMinutes={profile.workoutDurationMinutes}
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* "Today's Plan" Overview: Summary Card */}
-        <TodaysPlanOverview
-          workoutPlan={currentWorkoutPlan}
-          macros={currentMacros}
-          profile={profile}
-          onNavigateToWorkout={() => {
-            setActiveView('workout');
-            const el = document.getElementById('exercise-section');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onNavigateToDiet={() => {
-            setActiveView('nutrition');
-            const el = document.getElementById('nutrition-diet-section');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        />
-
-        {/* 24-Hour Endless Cycle Countdown & Live Shift Controller */}
-        <CycleCountdownBar
-          selectedDayId={selectedDayId}
-          onSelectDay={handleSelectDay}
-        />
-
-        {/* View Selection Filter Tabs in Bento Pill */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
-          <div className="flex rounded-full bg-slate-200/80 p-1 border border-slate-300/80 text-xs self-start">
-            <button
-              id="view-all-btn"
-              onClick={() => setActiveView('all')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeView === 'all'
-                  ? 'bg-white text-slate-900 font-black shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Full Daily Plan
-            </button>
-            <button
-              id="view-workout-btn"
-              onClick={() => setActiveView('workout')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeView === 'workout'
-                  ? 'bg-white text-slate-900 font-black shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Dumbbell className="w-3.5 h-3.5 text-lime-600" />
-              Workout Routine
-            </button>
-            <button
-              id="view-diet-btn"
-              onClick={() => setActiveView('nutrition')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
-                activeView === 'nutrition'
-                  ? 'bg-white text-slate-900 font-black shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Apple className="w-3.5 h-3.5 text-emerald-600" />
-              Diet & Macros
-            </button>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-600">
-            <span className="uppercase tracking-widest text-[11px] font-semibold">Adaptive Time Engine:</span>
-            <span className="font-mono font-bold text-lime-800 bg-lime-100/80 px-2.5 py-0.5 rounded-full border border-lime-200">
-              {profile.workoutDurationMinutes} mins active
-            </span>
-          </div>
-        </div>
-
-        {/* 2. Fixed 7-Day Split Navigation Strip */}
-        <DaySelector
-          rotations={SEVEN_DAY_ROTATION}
-          selectedDayId={selectedDayId}
-          onSelectDay={handleSelectDay}
-          activeCycleDayId={cycleStatus.activeDayId}
-          completedDayIds={completedDayIds}
-        />
-
-        {/* 3. Dynamic Daily Dashboard Banner ("Today's Plan") */}
-        {(activeView === 'all' || activeView === 'workout') && (
-          <DailyBanner
-            currentDayRotation={currentRotation}
-            workoutPlan={currentWorkoutPlan}
-            durationMinutes={profile.workoutDurationMinutes}
-            onDurationChange={handleDurationChange}
-            isToday={selectedDayId === cycleStatus.activeDayId}
-            onStartWorkout={() => {
-              handleStartAutoWorkout(0, 0);
-            }}
-            isWorkoutActive={isWorkoutActive}
-            completedSetsCount={completedSetsCount}
-          />
-        )}
-
-        {/* 4. Workout & Exercise Section */}
-        {(activeView === 'all' || activeView === 'workout') && (
-          <WorkoutSection
-            workoutPlan={currentWorkoutPlan}
-            completedSets={completedSets}
-            onToggleSet={handleToggleSet}
-            onStartRestTimer={handleStartRestTimer}
-            onCompleteWorkout={handleCompleteWorkout}
-            durationMinutes={profile.workoutDurationMinutes}
-            onStartAutoWorkout={handleStartAutoWorkout}
-          />
-        )}
-
-        {/* Visual Divider if in 'all' view */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 space-y-6">
+        {/* =========================================================================
+            VIEW 1: FULL DAILY PLAN (ALL-IN-ONE 24H PROTOCOL)
+            ========================================================================= */}
         {activeView === 'all' && (
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+          <div className="space-y-6">
+            {/* Today's Protocol Overview: High-Level Summary Card */}
+            <TodaysPlanOverview
+              workoutPlan={currentWorkoutPlan}
+              macros={currentMacros}
+              profile={profile}
+              onNavigateToWorkout={() => {
+                const el = document.getElementById('workout-routine-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              onNavigateToDiet={() => {
+                const el = document.getElementById('nutrition-diet-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              onNavigateToGuide={() => {
+                const el = document.getElementById('fitness-guide-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
+
+            {/* 24-Hour Endless Cycle Countdown & Live Shift Controller */}
+            <CycleCountdownBar
+              selectedDayId={selectedDayId}
+              onSelectDay={handleSelectDay}
+            />
+
+            {/* 7-Day Split Navigation Strip */}
+            <DaySelector
+              rotations={SEVEN_DAY_ROTATION}
+              selectedDayId={selectedDayId}
+              onSelectDay={handleSelectDay}
+              activeCycleDayId={cycleStatus.activeDayId}
+              completedDayIds={completedDayIds}
+            />
+
+            {/* SECTION 1: WORKOUT ROUTINE */}
+            <div id="workout-routine-section" className="scroll-mt-36 pt-2 space-y-4">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-[#181818] border border-[#2b2b2b] rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#14281a] border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] shadow-[0_0_12px_rgba(0,255,102,0.2)]">
+                    <Dumbbell className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black uppercase text-white font-heading tracking-tight flex items-center gap-2">
+                      <span>Section 1: Workout Routine</span>
+                      <span className="text-[10px] font-mono font-bold text-[#00FF66] bg-[#122417] px-2 py-0.5 rounded-full border border-[#00FF66]/30">
+                        {currentWorkoutPlan.exercises.length} Exercises
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-400 font-mono">
+                      Day {currentRotation.id} of 7 • {currentRotation.focus} • {profile.workoutDurationMinutes}m Target
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveView('workout');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-xs font-mono font-bold text-[#00FF66] hover:underline cursor-pointer hidden sm:block"
+                >
+                  Focus View →
+                </button>
+              </div>
+
+              {/* Dynamic Workout Banner */}
+              <DailyBanner
+                currentDayRotation={currentRotation}
+                workoutPlan={currentWorkoutPlan}
+                durationMinutes={profile.workoutDurationMinutes}
+                onDurationChange={handleDurationChange}
+                isToday={selectedDayId === cycleStatus.activeDayId}
+                onStartWorkout={() => {
+                  handleStartAutoWorkout(0, 0);
+                }}
+                isWorkoutActive={isWorkoutActive}
+                completedSetsCount={completedSetsCount}
+              />
+
+              {/* Full Exercise List */}
+              <WorkoutSection
+                workoutPlan={currentWorkoutPlan}
+                completedSets={completedSets}
+                onToggleSet={handleToggleSet}
+                onStartRestTimer={handleStartRestTimer}
+                onCompleteWorkout={handleCompleteWorkout}
+                durationMinutes={profile.workoutDurationMinutes}
+                onStartAutoWorkout={handleStartAutoWorkout}
+              />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-50 px-4 text-slate-600 font-bold tracking-widest flex items-center gap-2 border border-slate-200 rounded-full py-1 shadow-sm">
-                <Flame className="w-3.5 h-3.5 text-lime-600" />
-                Mifflin-St Jeor Clinical Nutrition Engine
-              </span>
+
+            {/* SECTION 2: DIET & MACROS */}
+            <div id="nutrition-diet-section" className="scroll-mt-36 pt-4 space-y-4">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-[#1a1412] border border-[#FF5500]/30 rounded-2xl shadow-[0_0_15px_rgba(255,85,0,0.08)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#2a170e] border border-[#FF5500]/40 flex items-center justify-center text-[#FF5500] shadow-[0_0_12px_rgba(255,85,0,0.2)]">
+                    <Apple className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black uppercase text-white font-heading tracking-tight flex items-center gap-2">
+                      <span>Section 2: Diet & Macros</span>
+                      <span className="text-[10px] font-mono font-bold text-[#FF5500] bg-[#2a170e] px-2 py-0.5 rounded-full border border-[#FF5500]/30">
+                        {currentMacros.targetCalories.toLocaleString()} kcal
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-300 font-mono">
+                      Mifflin-St Jeor Clinical Calculator • Goal: {profile.goal.replace('-', ' ')}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveView('nutrition');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-xs font-mono font-bold text-[#FF5500] hover:underline cursor-pointer hidden sm:block"
+                >
+                  Focus View →
+                </button>
+              </div>
+
+              <NutritionSection
+                profile={profile}
+                onUpdateGoal={handleGoalChange}
+              />
+            </div>
+
+            {/* SECTION 3: FITNESS GUIDE & COACH */}
+            <div id="fitness-guide-section" className="scroll-mt-36 pt-4 space-y-4">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-[#14261c] border border-[#00FF66]/30 rounded-2xl shadow-[0_0_15px_rgba(0,255,102,0.08)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#12281a] border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] shadow-[0_0_12px_rgba(0,255,102,0.2)]">
+                    <Compass className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black uppercase text-white font-heading tracking-tight flex items-center gap-2">
+                      <span>Section 3: Fitness Guide & AI Coach</span>
+                      <span className="text-[10px] font-mono font-bold text-[#00FF66] bg-[#122417] px-2 py-0.5 rounded-full border border-[#00FF66]/30">
+                        Live Audio
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-300 font-mono">
+                      Sports Science Cues & Coach Zephyr (Hinglish/English Live Voice)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveView('guide');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-xs font-mono font-bold text-[#00FF66] hover:underline cursor-pointer hidden sm:block"
+                >
+                  Focus View →
+                </button>
+              </div>
+
+              <FitnessGuideSection
+                profile={profile}
+                onOpenVoiceCoach={(initialTopic) => {
+                  setVoiceCoachInitialTopic(initialTopic || '');
+                  setIsVoiceCoachOpen(true);
+                }}
+              />
             </div>
           </div>
         )}
 
-        {/* 5. Nutrition & Macro Calculator ("Diet Section") */}
-        {(activeView === 'all' || activeView === 'nutrition') && (
-          <NutritionSection
-            profile={profile}
-            onUpdateGoal={handleGoalChange}
-          />
+        {/* =========================================================================
+            VIEW 2: WORKOUT ROUTINE (STANDALONE VIEWABLE)
+            ========================================================================= */}
+        {activeView === 'workout' && (
+          <div className="space-y-6">
+            {/* Workout Header Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#181818] border border-[#2b2b2b] rounded-2xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#14281a] border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] shadow-[0_0_14px_rgba(0,255,102,0.2)]">
+                  <Dumbbell className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black uppercase text-white font-heading tracking-tight">
+                    Workout Routine
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono">
+                    Day {currentRotation.id} of 7 • {currentRotation.focus} • {currentWorkoutPlan.exercises.length} Exercises
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400 font-bold uppercase tracking-wider hidden sm:inline">Intensity:</span>
+                <span className="text-xs font-mono font-black text-[#00FF66] bg-[#122417] px-3 py-1 rounded-full border border-[#00FF66]/30">
+                  HIGH HYPERTROPHY
+                </span>
+              </div>
+            </div>
+
+            {/* 24-Hour Cycle Countdown */}
+            <CycleCountdownBar
+              selectedDayId={selectedDayId}
+              onSelectDay={handleSelectDay}
+            />
+
+            {/* 7-Day Split Selector */}
+            <DaySelector
+              rotations={SEVEN_DAY_ROTATION}
+              selectedDayId={selectedDayId}
+              onSelectDay={handleSelectDay}
+              activeCycleDayId={cycleStatus.activeDayId}
+              completedDayIds={completedDayIds}
+            />
+
+            {/* Daily Banner */}
+            <DailyBanner
+              currentDayRotation={currentRotation}
+              workoutPlan={currentWorkoutPlan}
+              durationMinutes={profile.workoutDurationMinutes}
+              onDurationChange={handleDurationChange}
+              isToday={selectedDayId === cycleStatus.activeDayId}
+              onStartWorkout={() => {
+                handleStartAutoWorkout(0, 0);
+              }}
+              isWorkoutActive={isWorkoutActive}
+              completedSetsCount={completedSetsCount}
+            />
+
+            {/* Workout Section */}
+            <WorkoutSection
+              workoutPlan={currentWorkoutPlan}
+              completedSets={completedSets}
+              onToggleSet={handleToggleSet}
+              onStartRestTimer={handleStartRestTimer}
+              onCompleteWorkout={handleCompleteWorkout}
+              durationMinutes={profile.workoutDurationMinutes}
+              onStartAutoWorkout={handleStartAutoWorkout}
+            />
+          </div>
+        )}
+
+        {/* =========================================================================
+            VIEW 3: DIET & MACROS (STANDALONE VIEWABLE)
+            ========================================================================= */}
+        {activeView === 'nutrition' && (
+          <div className="space-y-6">
+            {/* Diet Header Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#1e1511] border border-[#FF5500]/30 rounded-2xl shadow-[0_0_20px_rgba(255,85,0,0.1)]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#2e170c] border border-[#FF5500]/40 flex items-center justify-center text-[#FF5500] shadow-[0_0_15px_rgba(255,85,0,0.25)]">
+                  <Apple className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black uppercase text-white font-heading tracking-tight">
+                    Diet & Macros Clinical Engine
+                  </h2>
+                  <p className="text-xs text-slate-300 font-mono">
+                    Mifflin-St Jeor Formula • Target: <span className="text-[#FF5500] font-black">{currentMacros.targetCalories.toLocaleString()} kcal/day</span>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold text-slate-400">Goal:</span>
+                <span className="text-xs font-mono font-black text-[#FF5500] bg-[#2e170c] px-3 py-1 rounded-full border border-[#FF5500]/30 uppercase">
+                  {profile.goal.replace('-', ' ')}
+                </span>
+              </div>
+            </div>
+
+            {/* Full Nutrition Section */}
+            <NutritionSection
+              profile={profile}
+              onUpdateGoal={handleGoalChange}
+            />
+          </div>
+        )}
+
+        {/* =========================================================================
+            VIEW 4: FITNESS GUIDE & COACH (STANDALONE VIEWABLE)
+            ========================================================================= */}
+        {activeView === 'guide' && (
+          <div className="space-y-6">
+            {/* Coach Header Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#14241b] border border-[#00FF66]/30 rounded-2xl shadow-[0_0_20px_rgba(0,255,102,0.1)]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#12281a] border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] shadow-[0_0_15px_rgba(0,255,102,0.25)]">
+                  <Compass className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black uppercase text-white font-heading tracking-tight">
+                    Fitness Guide & Live AI Coach
+                  </h2>
+                  <p className="text-xs text-slate-300 font-mono">
+                    Evidence-Based Sports Science • Coach Zephyr (Hinglish/English Live Voice)
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setVoiceCoachInitialTopic('');
+                  setIsVoiceCoachOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-[#00FF66] hover:bg-[#00e65c] text-black font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-[0_0_15px_rgba(0,255,102,0.3)] active:scale-95 shrink-0"
+              >
+                <Mic className="w-4 h-4" />
+                <span>Talk to Voice Coach</span>
+              </button>
+            </div>
+
+            {/* Full Fitness Guide Section */}
+            <FitnessGuideSection
+              profile={profile}
+              onOpenVoiceCoach={(initialTopic) => {
+                setVoiceCoachInitialTopic(initialTopic || '');
+                setIsVoiceCoachOpen(true);
+              }}
+            />
+          </div>
         )}
 
         {/* Google AdSense Ad Unit */}
         <GoogleAdUnit />
       </main>
+
+      {/* Live Audio Voice Coach Modal (gemini-3.1-flash-live-preview) */}
+      <LiveVoiceCoach
+        isOpen={isVoiceCoachOpen}
+        onClose={() => setIsVoiceCoachOpen(false)}
+        profile={profile}
+        initialTopicPrompt={voiceCoachInitialTopic}
+      />
 
       {/* Automated Workout Routine Engine (Auto Sets with 15s Recovery Breaks) */}
       <AutoWorkoutPlayer
@@ -389,6 +608,25 @@ export default function App() {
         profile={profile}
         onSave={(updated) => updateProfile(updated)}
         isOnboarding={false}
+        onOpenBmi={() => setIsBmiModalOpen(true)}
+      />
+
+      {/* Body Mass Index (BMI) & Health Analyzer Modal */}
+      <BmiModal
+        isOpen={isBmiModalOpen}
+        onClose={() => setIsBmiModalOpen(false)}
+        profile={profile}
+        onUpdateWeight={(newWeight, unit) => {
+          updateProfile({
+            ...profile,
+            weight: newWeight,
+            weightUnit: unit,
+          });
+        }}
+        onOpenVoiceCoach={() => {
+          setIsVoiceCoachOpen(true);
+          setVoiceCoachInitialTopic('My BMI score, body composition, and calorie target');
+        }}
       />
 
       {/* Workout Completion Celebration Modal */}
@@ -410,35 +648,35 @@ export default function App() {
       <OfflineIndicator />
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#262626] bg-[#141414] py-6 mt-12 text-center text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <img
               src="/logo.png"
               alt="Fit in Blink Logo"
               referrerPolicy="no-referrer"
-              className="w-6 h-6 rounded-lg object-cover border border-slate-200 shadow-sm"
+              className="w-6 h-6 rounded-lg object-cover border border-[#2e2e2e] shadow-sm"
             />
-            <span className="font-bold text-slate-900 uppercase tracking-wider">Fit in Blink</span>
+            <span className="font-bold text-white uppercase tracking-wider font-heading">Fit in Blink</span>
             <span>•</span>
-            <span className="font-medium text-slate-600">Continuous 24h 7-Day Endless Loop: Chest ➔ Back ➔ Arms ➔ Legs ➔ Core ➔ Recovery ➔ Rest</span>
+            <span className="font-medium text-slate-400">Continuous 24h 7-Day Endless Loop: Chest ➔ Back ➔ Arms ➔ Legs ➔ Core ➔ Recovery ➔ Rest</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               id="footer-reset-cycle-btn"
               onClick={resetCycle}
-              className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 rounded-lg text-xs font-bold transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 bg-[#1f1f1f] hover:bg-[#282828] border border-[#333333] hover:border-[#444444] text-slate-300 hover:text-white rounded-lg text-xs font-bold transition cursor-pointer"
               title="Restart 7-day endless loop from Day 1 (Chest Day)"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-lime-600" />
+              <RotateCcw className="w-3.5 h-3.5 text-[#00FF66]" />
               <span>Reset to Day 1</span>
             </button>
             <button
               id="footer-install-app-btn"
               onClick={() => setIsInstallModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1 bg-lime-100 hover:bg-lime-200 border border-lime-300 text-lime-900 rounded-lg text-xs font-bold transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 bg-[#00FF66] hover:bg-[#00e65c] text-black rounded-lg text-xs font-black uppercase tracking-wider transition cursor-pointer shadow-[0_0_10px_rgba(0,255,102,0.3)]"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Install App</span>
             </button>
           </div>

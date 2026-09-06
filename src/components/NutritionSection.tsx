@@ -10,7 +10,8 @@ import {
   Utensils, 
   Check, 
   TrendingUp, 
-  ShieldCheck 
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
 import { UserProfile, MacroTargets, Goal } from '../types';
 import { calculateMacros, getMealDistribution } from '../utils/nutrition';
@@ -32,47 +33,48 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
     maintenance: {
       title: 'Healthy Maintenance',
       desc: '100% of TDEE. Fuels peak athletic output, protects hormones, and sustains lean tissue.',
-      badge: 'Light & Sustainable (Default)',
+      badge: 'Peak Energy Protocol',
     },
     gentle_deficit: {
-      title: 'Gentle Fat Loss',
-      desc: 'Controlled ~300 kcal deficit. Promotes gradual fat oxidation without hunger spikes or muscle breakdown.',
-      badge: 'Gradual Fat Loss',
+      title: 'Active Fat Shred',
+      desc: 'Controlled ~300 kcal burn deficit. Accelerates fat oxidation while preserving lean mass.',
+      badge: 'Calorie Burn Deficit',
     },
     muscle_gain: {
-      title: 'Lean Muscle Gain',
-      desc: 'Clean +250 kcal surplus. Supplies glycogen and amino pool for myofibrillar hypertrophy.',
-      badge: 'Hypertrophy Surplus',
+      title: 'Hypertrophy Surplus',
+      desc: 'Clean +250 kcal surplus. Supplies amino acids & glycogen for maximum muscle hypertrophy.',
+      badge: 'Anabolic Surplus Milestone',
     },
   };
 
   return (
-    <section id="nutrition-diet-section" className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col space-y-5 shadow-sm">
+    <section id="nutrition-diet-section" className="bg-[#161616] border border-[#282828] rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex flex-col space-y-5 shadow-[0_4px_24px_rgba(0,0,0,0.5)] text-slate-100">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#262626] pb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xs font-bold text-lime-800 uppercase tracking-widest">
-              Personalized Nutrition & Macro Calculator
+            <h2 className="text-xs font-mono font-black text-[#FF5500] uppercase tracking-widest flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#FF5500] shadow-[0_0_8px_#FF5500]" />
+              Diet Milestones & Macro Targets
             </h2>
-            <span className="text-[10px] bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md text-slate-700 uppercase font-bold tracking-wider">
-              Mifflin-St Jeor Engine
+            <span className="text-[10px] bg-[#222222] border border-[#333333] px-2.5 py-1 rounded-md text-slate-300 uppercase font-bold tracking-wider">
+              Mifflin-St Jeor Clinical
             </span>
           </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
+          <p className="text-xs text-slate-400 mt-1 font-medium">
             Clinical metabolic formula personalized to your current weight, height, age, and workout schedule.
           </p>
         </div>
 
-        {/* View Switcher Tabs in Bento Pill */}
-        <div className="flex rounded-full bg-slate-100 p-1 border border-slate-200 text-xs self-start sm:self-center">
+        {/* View Switcher Tabs in Angular Bento Pill */}
+        <div className="flex rounded-xl bg-[#1e1e1e] p-1 border border-[#2e2e2e] text-xs self-start sm:self-center">
           <button
             id="nutrition-tab-targets"
             onClick={() => setActiveTab('targets')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'targets' 
-                ? 'bg-white text-slate-950 font-black shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#FF5500] text-white font-black shadow-[0_0_12px_rgba(255,85,0,0.4)]' 
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Targets
@@ -80,10 +82,10 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
           <button
             id="nutrition-tab-meals"
             onClick={() => setActiveTab('meals')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'meals' 
-                ? 'bg-white text-slate-950 font-black shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#FF5500] text-white font-black shadow-[0_0_12px_rgba(255,85,0,0.4)]' 
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Meals
@@ -91,10 +93,10 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
           <button
             id="nutrition-tab-foods"
             onClick={() => setActiveTab('foods')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'foods' 
-                ? 'bg-white text-slate-950 font-black shadow-xs' 
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#FF5500] text-white font-black shadow-[0_0_12px_rgba(255,85,0,0.4)]' 
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Foods
@@ -103,17 +105,17 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
       </div>
 
       {/* Goal Strategy Quick-Bar */}
-      <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200">
+      <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-[#2b2b2b]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-600">
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
               Caloric Strategy:
             </span>
-            <span className="text-xs font-bold text-lime-800 bg-lime-100 px-2.5 py-0.5 rounded-full border border-lime-300 uppercase">
+            <span className="text-xs font-bold text-[#FF5500] bg-[#291710] px-2.5 py-0.5 rounded-full border border-[#FF5500]/30 uppercase font-mono">
               {goalDescriptions[profile.goal].badge}
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
             Select goal to re-calculate targets
           </span>
         </div>
@@ -128,17 +130,17 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
                 onClick={() => onUpdateGoal(g)}
                 className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                   isSel
-                    ? 'border-lime-500 bg-white shadow-xs ring-1 ring-lime-400'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                    ? 'border-[#FF5500] bg-[#221712] shadow-[0_0_15px_rgba(255,85,0,0.2)] ring-1 ring-[#FF5500]'
+                    : 'border-[#2e2e2e] bg-[#1e1e1e] text-slate-300 hover:bg-[#252525] hover:border-[#3a3a3a]'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className={`text-xs font-black uppercase tracking-tight ${isSel ? 'text-lime-800' : 'text-slate-900'}`}>
+                  <span className={`text-xs font-black uppercase tracking-tight font-heading ${isSel ? 'text-[#FF5500]' : 'text-white'}`}>
                     {goalDescriptions[g].title}
                   </span>
-                  {isSel && <Check className="w-4 h-4 text-lime-700" />}
+                  {isSel && <Check className="w-4 h-4 text-[#FF5500]" />}
                 </div>
-                <p className="text-[11px] text-slate-600 mt-1.5 leading-snug font-medium">
+                <p className="text-[11px] text-slate-400 mt-1.5 leading-snug font-medium">
                   {goalDescriptions[g].desc}
                 </p>
               </button>
@@ -151,125 +153,125 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
         <div className="space-y-4">
           {/* Main Calorie & Macro Target Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3.5">
-            {/* Total Daily Calories */}
-            <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 relative overflow-hidden flex flex-col justify-between shadow-xs">
+            {/* Total Daily Calories with Electric Orange Burn & Glow */}
+            <div className="p-5 rounded-2xl bg-[#1c1815] border border-[#FF5500]/50 relative overflow-hidden flex flex-col justify-between shadow-[0_0_20px_rgba(255,85,0,0.15)]">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
-                  <span className="font-bold uppercase tracking-widest text-lime-800">Total Calories</span>
-                  <Flame className="w-4 h-4 text-lime-600" />
+                <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span className="font-bold uppercase tracking-widest text-[#FF5500]">Target Calories</span>
+                  <Flame className="w-4 h-4 text-[#FF5500]" />
                 </div>
-                <div className="text-3xl sm:text-4xl font-black font-mono text-slate-950 tracking-tight">
+                <div className="text-3xl sm:text-4xl font-black font-mono text-[#FF5500] tracking-tight font-metric">
                   {macros.targetCalories.toLocaleString()}
-                  <span className="text-xs font-bold text-slate-500 ml-1 uppercase">kcal</span>
+                  <span className="text-xs font-bold text-slate-400 ml-1 uppercase">kcal</span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-600 space-y-1">
+              <div className="mt-4 pt-3 border-t border-[#33221b] text-[11px] text-slate-400 space-y-1">
                 <div className="flex justify-between">
                   <span>Basal Rate (BMR):</span>
-                  <span className="font-mono text-slate-900 font-bold">{macros.bmr} kcal</span>
+                  <span className="font-mono text-white font-bold">{macros.bmr} kcal</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Daily Burn (TDEE):</span>
-                  <span className="font-mono text-slate-900 font-bold">{macros.tdee} kcal</span>
+                  <span className="font-mono text-[#FF5500] font-bold">{macros.tdee} kcal</span>
                 </div>
               </div>
             </div>
 
-            {/* Protein Target */}
-            <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 relative flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
+            {/* Protein Target (Neon Safety Green) */}
+            <div className="p-5 rounded-2xl bg-[#16201a] border border-[#00FF66]/40 relative flex flex-col justify-between hover:border-[#00FF66] transition-colors shadow-[0_0_15px_rgba(0,255,102,0.1)]">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
-                  <span className="font-bold uppercase tracking-widest text-slate-900">Protein</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 border border-lime-300 font-mono">
+                <div className="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span className="font-bold uppercase tracking-widest text-white">Protein Target</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#122b19] text-[#00FF66] border border-[#00FF66]/40 font-mono">
                     {macros.proteinPct}%
                   </span>
                 </div>
-                <div className="text-3xl sm:text-4xl font-black font-mono text-slate-950 tracking-tight">
+                <div className="text-3xl sm:text-4xl font-black font-mono text-[#00FF66] tracking-tight font-metric">
                   {macros.proteinGrams}
-                  <span className="text-xs font-bold text-slate-500 ml-1 uppercase">grams</span>
+                  <span className="text-xs font-bold text-slate-400 ml-1 uppercase">grams</span>
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1 font-medium">
+                <div className="text-[11px] text-slate-400 mt-1 font-medium">
                   ~{macros.proteinGrams * 4} kcal • Lean muscle repair
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-600">
-                Target: <span className="text-lime-800 font-bold">2.0g per kg</span> bodyweight for optimal synthesis.
+              <div className="mt-4 pt-3 border-t border-[#233527] text-[11px] text-slate-300">
+                Target: <span className="text-[#00FF66] font-bold">2.0g per kg</span> bodyweight for optimal synthesis.
               </div>
             </div>
 
             {/* Carbohydrates Target */}
-            <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 relative flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
+            <div className="p-5 rounded-2xl bg-[#181818] border border-[#2e2e2e] relative flex flex-col justify-between hover:border-slate-500 transition-colors">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
-                  <span className="font-bold uppercase tracking-widest text-slate-900">Carbohydrates</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 font-mono">
+                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <span className="font-bold uppercase tracking-widest text-slate-200">Carbohydrates</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#1e2a33] text-cyan-400 border border-cyan-500/30 font-mono">
                     {macros.carbPct}%
                   </span>
                 </div>
-                <div className="text-3xl sm:text-4xl font-black font-mono text-slate-950 tracking-tight">
+                <div className="text-3xl sm:text-4xl font-black font-mono text-white tracking-tight font-metric">
                   {macros.carbGrams}
-                  <span className="text-xs font-bold text-slate-500 ml-1 uppercase">grams</span>
+                  <span className="text-xs font-bold text-slate-400 ml-1 uppercase">grams</span>
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1 font-medium">
+                <div className="text-[11px] text-slate-400 mt-1 font-medium">
                   ~{macros.carbGrams * 4} kcal • Glycogen & stamina
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-600">
+              <div className="mt-4 pt-3 border-t border-[#282828] text-[11px] text-slate-400">
                 Primary ATP fuel for intense training and CNS recovery.
               </div>
             </div>
 
             {/* Fats Target */}
-            <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 relative flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
+            <div className="p-5 rounded-2xl bg-[#181818] border border-[#2e2e2e] relative flex flex-col justify-between hover:border-slate-500 transition-colors">
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
-                  <span className="font-bold uppercase tracking-widest text-slate-900">Healthy Fats</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-mono">
+                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <span className="font-bold uppercase tracking-widest text-slate-200">Healthy Fats</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#2b2416] text-amber-400 border border-amber-500/30 font-mono">
                     {macros.fatPct}%
                   </span>
                 </div>
-                <div className="text-3xl sm:text-4xl font-black font-mono text-slate-950 tracking-tight">
+                <div className="text-3xl sm:text-4xl font-black font-mono text-white tracking-tight font-metric">
                   {macros.fatGrams}
-                  <span className="text-xs font-bold text-slate-500 ml-1 uppercase">grams</span>
+                  <span className="text-xs font-bold text-slate-400 ml-1 uppercase">grams</span>
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1 font-medium">
+                <div className="text-[11px] text-slate-400 mt-1 font-medium">
                   ~{macros.fatGrams * 9} kcal • Hormones & joints
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-600">
+              <div className="mt-4 pt-3 border-t border-[#282828] text-[11px] text-slate-400">
                 Essential fatty acids for hormone synthesis and cell integrity.
               </div>
             </div>
           </div>
 
           {/* Visual Macro Proportion Bar */}
-          <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-2.5">
+          <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-[#2b2b2b] space-y-2.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold uppercase tracking-widest text-lime-800">Macro Caloric Split</span>
-              <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider">
-                <span className="flex items-center gap-1.5 text-lime-800">
-                  <span className="w-2.5 h-2.5 rounded-full bg-lime-500" />
+              <span className="font-bold uppercase tracking-widest text-slate-300 font-mono">Macro Caloric Split</span>
+              <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider font-mono">
+                <span className="flex items-center gap-1.5 text-[#00FF66]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#00FF66] shadow-[0_0_6px_#00FF66]" />
                   Protein ({macros.proteinPct}%)
                 </span>
-                <span className="flex items-center gap-1.5 text-cyan-700">
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
+                <span className="flex items-center gap-1.5 text-cyan-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
                   Carbs ({macros.carbPct}%)
                 </span>
-                <span className="flex items-center gap-1.5 text-amber-700">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                <span className="flex items-center gap-1.5 text-[#FF5500]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5500] shadow-[0_0_6px_#FF5500]" />
                   Fats ({macros.fatPct}%)
                 </span>
               </div>
             </div>
 
             {/* Split Bar */}
-            <div className="w-full h-3.5 rounded-full overflow-hidden flex bg-slate-200 p-0.5 border border-slate-300">
+            <div className="w-full h-3.5 rounded-full overflow-hidden flex bg-[#121212] p-0.5 border border-[#333333]">
               <div 
-                className="bg-lime-500 h-full rounded-l-full transition-all duration-500"
+                className="bg-[#00FF66] h-full rounded-l-full transition-all duration-500 shadow-[0_0_8px_#00FF66]"
                 style={{ width: `${macros.proteinPct}%` }}
                 title={`Protein: ${macros.proteinPct}%`}
               />
@@ -279,7 +281,7 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
                 title={`Carbs: ${macros.carbPct}%`}
               />
               <div 
-                className="bg-amber-500 h-full rounded-r-full transition-all duration-500"
+                className="bg-[#FF5500] h-full rounded-r-full transition-all duration-500 shadow-[0_0_8px_#FF5500]"
                 style={{ width: `${macros.fatPct}%` }}
                 title={`Fats: ${macros.fatPct}%`}
               />
@@ -289,33 +291,33 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
           {/* Hydration & Scientific Equation Breakdown Callout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Water Target */}
-            <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-cyan-100 border border-cyan-200 flex items-center justify-center shrink-0">
-                <Droplets className="w-6 h-6 text-cyan-600" />
+            <div className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#162733] border border-cyan-500/40 flex items-center justify-center shrink-0">
+                <Droplets className="w-6 h-6 text-cyan-400" />
               </div>
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-600">Daily Water Target</div>
-                <div className="text-lg font-mono font-bold text-slate-950 flex items-baseline gap-1">
-                  <span>{macros.waterLiters} Liters</span>
-                  <span className="text-xs text-slate-500 font-normal">(~{Math.round(macros.waterLiters * 4.2)} glasses)</span>
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Daily Water Target</div>
+                <div className="text-lg font-mono font-bold text-white flex items-baseline gap-1">
+                  <span className="text-cyan-400">{macros.waterLiters} Liters</span>
+                  <span className="text-xs text-slate-400 font-normal">(~{Math.round(macros.waterLiters * 4.2)} glasses)</span>
                 </div>
-                <p className="text-[11px] text-slate-600 mt-0.5">
+                <p className="text-[11px] text-slate-400 mt-0.5">
                   Calculated at 35ml/kg baseline + 500ml workout hydration compensation.
                 </p>
               </div>
             </div>
 
             {/* Equation Explainer */}
-            <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-lime-100 border border-lime-200 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6 text-lime-700" />
+            <div className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#16281b] border border-[#00FF66]/30 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-6 h-6 text-[#00FF66]" />
               </div>
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-600">Mifflin-St Jeor Formula</div>
-                <div className="text-xs font-mono font-bold text-slate-950 mt-0.5">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Mifflin-St Jeor Formula</div>
+                <div className="text-xs font-mono font-bold text-[#00FF66] mt-0.5">
                   10×W(kg) + 6.25×H(cm) - 5×Age ± Sex
                 </div>
-                <p className="text-[11px] text-slate-600 mt-0.5">
+                <p className="text-[11px] text-slate-400 mt-0.5">
                   Clinical gold-standard equation for precise metabolic expenditure prediction.
                 </p>
               </div>
@@ -331,51 +333,51 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
             {meals.map((meal, idx) => (
               <div 
                 key={meal.name}
-                className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 flex flex-col justify-between space-y-3"
+                className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] flex flex-col justify-between space-y-3"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-bold text-lime-800 uppercase tracking-wider">
+                    <span className="text-xs font-mono font-bold text-[#FF5500] uppercase tracking-wider">
                       Meal 0{idx + 1}
                     </span>
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                       {meal.timeAdvice}
                     </span>
                   </div>
-                  <h4 className="text-base font-bold uppercase italic text-slate-950 mt-0.5">
+                  <h4 className="text-base font-bold uppercase italic text-white mt-0.5 font-heading">
                     {meal.name}
                   </h4>
                 </div>
 
                 {/* Macro Pill Row */}
-                <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-white border border-slate-200 text-center font-mono shadow-xs">
+                <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-[#222222] border border-[#333333] text-center font-mono shadow-xs">
                   <div>
-                    <div className="text-[10px] text-slate-500 font-bold uppercase">Calories</div>
-                    <div className="text-xs font-bold text-slate-900">{meal.calories}</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase">Calories</div>
+                    <div className="text-xs font-bold text-[#FF5500]">{meal.calories}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-lime-700 font-bold uppercase">Protein</div>
-                    <div className="text-xs font-bold text-lime-800">{meal.protein}g</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase">Protein</div>
+                    <div className="text-xs font-bold text-[#00FF66]">{meal.protein}g</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-cyan-600 font-bold uppercase">Carbs</div>
-                    <div className="text-xs font-bold text-cyan-700">{meal.carbs}g</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase">Carbs</div>
+                    <div className="text-xs font-bold text-slate-100">{meal.carbs}g</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-amber-600 font-bold uppercase">Fats</div>
-                    <div className="text-xs font-bold text-amber-700">{meal.fats}g</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase">Fats</div>
+                    <div className="text-xs font-bold text-amber-400">{meal.fats}g</div>
                   </div>
                 </div>
 
                 {/* Sample Meal Options */}
                 <div className="space-y-1 text-xs">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     Recommended Food Combinations:
                   </span>
-                  <ul className="space-y-1 text-[11px] text-slate-700">
+                  <ul className="space-y-1 text-[11px] text-slate-300">
                     {meal.sampleFoods.map((food, fIdx) => (
                       <li key={fIdx} className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-lime-500 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF5500] shrink-0" />
                         <span>{food}</span>
                       </li>
                     ))}
@@ -390,107 +392,107 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
       {/* Tab: Food Sources */}
       {activeTab === 'foods' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* High Protein Sources */}
-          <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
-            <div className="flex items-center gap-2 text-lime-800">
-              <span className="p-1.5 rounded-lg bg-lime-100 border border-lime-200">
-                <Utensils className="w-4 h-4 text-lime-700" />
+          {/* High Protein Sources (Neon Green) */}
+          <div className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] space-y-3">
+            <div className="flex items-center gap-2 text-[#00FF66]">
+              <span className="p-1.5 rounded-lg bg-[#14281a] border border-[#00FF66]/30">
+                <Utensils className="w-4 h-4 text-[#00FF66]" />
               </span>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-950">Lean Protein Sources</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white font-heading">Lean Protein Sources</h4>
             </div>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-400">
               High biological value with full essential amino acid profiles for lean muscle repair.
             </p>
-            <ul className="space-y-1.5 text-xs text-slate-700">
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+            <ul className="space-y-1.5 text-xs text-slate-300">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Chicken & Turkey Breast</span>
-                <span className="text-lime-800 font-mono font-bold">31g / 100g</span>
+                <span className="text-[#00FF66] font-mono font-bold">31g / 100g</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Egg Whites & Whole Eggs</span>
-                <span className="text-lime-800 font-mono font-bold">13g / 100g</span>
+                <span className="text-[#00FF66] font-mono font-bold">13g / 100g</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Wild Salmon / Tuna</span>
-                <span className="text-lime-800 font-mono font-bold">25g / 100g</span>
+                <span className="text-[#00FF66] font-mono font-bold">25g / 100g</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Plain Greek Yogurt</span>
-                <span className="text-lime-800 font-mono font-bold">17g / 170g</span>
+                <span className="text-[#00FF66] font-mono font-bold">17g / 170g</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Whey / Plant Isolate</span>
-                <span className="text-lime-800 font-mono font-bold">24g / scoop</span>
+                <span className="text-[#00FF66] font-mono font-bold">24g / scoop</span>
               </li>
             </ul>
           </div>
 
           {/* Clean Complex Carbs */}
-          <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
-            <div className="flex items-center gap-2 text-cyan-700">
-              <span className="p-1.5 rounded-lg bg-cyan-100 border border-cyan-200">
-                <Sparkles className="w-4 h-4 text-cyan-600" />
+          <div className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] space-y-3">
+            <div className="flex items-center gap-2 text-cyan-400">
+              <span className="p-1.5 rounded-lg bg-[#162733] border border-cyan-500/30">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
               </span>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-950">Complex Energy Carbs</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white font-heading">Complex Energy Carbs</h4>
             </div>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-400">
               Low-glycemic slow-digesting fuel to maintain steady blood glucose during training.
             </p>
-            <ul className="space-y-1.5 text-xs text-slate-700">
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+            <ul className="space-y-1.5 text-xs text-slate-300">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Rolled Oats & Steel Cut</span>
-                <span className="text-cyan-700 font-mono font-bold">Slow Digesting</span>
+                <span className="text-cyan-400 font-mono font-bold">Slow Digesting</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Sweet Potatoes & Yams</span>
-                <span className="text-cyan-700 font-mono font-bold">High Potassium</span>
+                <span className="text-cyan-400 font-mono font-bold">High Potassium</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Jasmine / Basmati Rice</span>
-                <span className="text-cyan-700 font-mono font-bold">Post-Workout</span>
+                <span className="text-cyan-400 font-mono font-bold">Post-Workout</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Tri-Color Quinoa</span>
-                <span className="text-cyan-700 font-mono font-bold">Fiber & Iron</span>
+                <span className="text-cyan-400 font-mono font-bold">Fiber & Iron</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Blueberries & Bananas</span>
-                <span className="text-cyan-700 font-mono font-bold">Glycogen</span>
+                <span className="text-cyan-400 font-mono font-bold">Glycogen</span>
               </li>
             </ul>
           </div>
 
-          {/* Healthy Fats */}
-          <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
-            <div className="flex items-center gap-2 text-amber-700">
-              <span className="p-1.5 rounded-lg bg-amber-100 border border-amber-200">
-                <Flame className="w-4 h-4 text-amber-600" />
+          {/* Healthy Fats (Electric Orange) */}
+          <div className="p-4 rounded-2xl bg-[#1a1a1a] border border-[#2b2b2b] space-y-3">
+            <div className="flex items-center gap-2 text-[#FF5500]">
+              <span className="p-1.5 rounded-lg bg-[#2b1710] border border-[#FF5500]/30">
+                <Flame className="w-4 h-4 text-[#FF5500]" />
               </span>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-950">Essential Healthy Fats</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white font-heading">Essential Healthy Fats</h4>
             </div>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-400">
               Monounsaturated and omega-3 fatty acids for joint fluid balance and cell health.
             </p>
-            <ul className="space-y-1.5 text-xs text-slate-700">
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+            <ul className="space-y-1.5 text-xs text-slate-300">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Extra Virgin Olive Oil</span>
-                <span className="text-amber-700 font-mono font-bold">Polyphenols</span>
+                <span className="text-[#FF5500] font-mono font-bold">Polyphenols</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Whole Hass Avocados</span>
-                <span className="text-amber-700 font-mono font-bold">High Fiber</span>
+                <span className="text-[#FF5500] font-mono font-bold">High Fiber</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Raw Almonds & Walnuts</span>
-                <span className="text-amber-700 font-mono font-bold">Omega-3 ALA</span>
+                <span className="text-[#FF5500] font-mono font-bold">Omega-3 ALA</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Chia & Flax Seeds</span>
-                <span className="text-amber-700 font-mono font-bold">Anti-Inflammatory</span>
+                <span className="text-[#FF5500] font-mono font-bold">Anti-Inflammatory</span>
               </li>
-              <li className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-xs">
+              <li className="p-2.5 rounded-xl bg-[#222222] border border-[#333333] flex justify-between">
                 <span>Natural Peanut Butter</span>
-                <span className="text-amber-700 font-mono font-bold">Caloric Fuel</span>
+                <span className="text-[#FF5500] font-mono font-bold">Caloric Fuel</span>
               </li>
             </ul>
           </div>
@@ -499,4 +501,3 @@ export const NutritionSection: React.FC<NutritionSectionProps> = ({
     </section>
   );
 };
-

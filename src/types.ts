@@ -62,6 +62,7 @@ export interface DailyWorkoutPlan {
   dayId: number;
   dayName: string;
   focus: string;
+  bannerHeadline?: string;
   durationMinutes: number;
   intensityLabel: string;
   burnEstimateKcal: number;

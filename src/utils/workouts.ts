@@ -740,6 +740,7 @@ export function generateDailyWorkoutPlan(dayId: number, durationMinutes: number)
     dayId,
     dayName: rotation.dayName,
     focus: rotation.focus,
+    bannerHeadline: rotation.bannerHeadline,
     durationMinutes,
     intensityLabel,
     burnEstimateKcal,
