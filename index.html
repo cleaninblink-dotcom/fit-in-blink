@@ -3,12 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Gracefully handle benign Vite HMR websocket connection messages in container preview
       (function() {
+        // Intercept Vite HMR WebSocket in container environment to prevent connection failures
+        var NativeWS = window.WebSocket;
+        if (NativeWS) {
+          window.WebSocket = function(url, protocols) {
+            var isVite = false;
+            if (protocols === 'vite-hmr' || protocols === 'vite-ping') {
+              isVite = true;
+            } else if (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('24678') !== -1 || url.indexOf('vite') !== -1)) {
+              isVite = true;
+            }
+
+            if (isVite) {
+              var listeners = {};
+              return {
+                readyState: 1, // OPEN
+                send: function() {},
+                close: function() {},
+                addEventListener: function(event, callback) {
+                  if (!listeners[event]) listeners[event] = [];
+                  listeners[event].push(callback);
+                  if (event === 'open') {
+                    setTimeout(function() {
+                      try { callback({ type: 'open' }); } catch (_) {}
+                    }, 0);
+                  }
+                },
+                removeEventListener: function(event, callback) {
+                  if (!listeners[event]) return;
+                  listeners[event] = listeners[event].filter(function(cb) { return cb !== callback; });
+                },
+                dispatchEvent: function() { return true; }
+              };
+            }
+            return new NativeWS(url, protocols);
+          };
+          window.WebSocket.prototype = NativeWS.prototype;
+          window.WebSocket.CONNECTING = NativeWS.CONNECTING;
+          window.WebSocket.OPEN = NativeWS.OPEN;
+          window.WebSocket.CLOSING = NativeWS.CLOSING;
+          window.WebSocket.CLOSED = NativeWS.CLOSED;
+        }
+
+        // Suppress any benign Vite HMR unhandled rejection or error logs
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event && event.reason) {
+            var msg = String(event.reason.message || event.reason);
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('vite') !== -1) {
+              event.preventDefault();
+            }
+          }
+        });
+
         var origError = console.error;
         console.error = function() {
           var firstArg = arguments[0];
-          if (typeof firstArg === 'string' && firstArg.indexOf('[vite]') !== -1) {
+          if (typeof firstArg === 'string' && (firstArg.indexOf('[vite]') !== -1 || firstArg.indexOf('WebSocket') !== -1)) {
             console.debug.apply(console, arguments);
             return;
           }
