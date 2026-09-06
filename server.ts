@@ -40,6 +40,12 @@ async function startServer() {
     });
   });
 
+  // Serve ads.txt directly
+  app.get("/ads.txt", (_req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.sendFile(path.join(process.cwd(), "public", "ads.txt"));
+  });
+
   // Fitness Guide with Search Grounding using gemini-3.5-flash
   app.post("/api/fitness-guide/ask", async (req, res) => {
     try {
