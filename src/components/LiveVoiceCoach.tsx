@@ -15,6 +15,7 @@ import {
   Bot,
   Zap,
   Languages,
+  ExternalLink,
 } from 'lucide-react';
 import { float32To16BitPCM, LiveAudioPlayer } from '../utils/liveAudio';
 import { UserProfile } from '../types';

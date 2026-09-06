@@ -139,6 +139,43 @@ Structure your response with:
     }
   });
 
+  // REST / Streaming endpoint for Coach Zephyr (works everywhere including preview iframes and strict browser environments)
+  app.post("/api/live-coach/message", async (req, res) => {
+    try {
+      const { message, lang = "hinglish" } = req.body;
+      if (!message || typeof message !== "string") {
+        return res.status(400).json({ error: "Message is required." });
+      }
+
+      const ai = getGenAI();
+      let systemInstruction = "";
+      if (lang === "hinglish") {
+        systemInstruction =
+          "You are Coach Zephyr (Coach Veer), an energetic, high-octane personal fitness trainer for 'Fit in Blink'. Speak in authentic, motivating, conversational Hinglish (a vibrant, natural blend of Hindi and English like 'Arre champion, kya haal hai!', 'Dumbbell bench press me arch maintain karo aur chest se press karo', 'Shabash, form solid hai!', 'Aaj ka calorie and protein target hit karna hai boss!'). Keep spoken responses short, punchy (1 to 3 sentences maximum), and electrifying so the user can easily listen mid-workout. If asked about workouts, exercises, or form, give crisp cues. If asked about nutrition, give direct numbers.";
+      } else if (lang === "hindi") {
+        systemInstruction =
+          "You are Coach Zephyr, an energetic personal fitness trainer for 'Fit in Blink'. Speak in clear, warm, conversational Hindi. Keep spoken responses short, punchy (1 to 3 sentences), highly motivating, and focused on fitness, exercise cues, and nutrition targets.";
+      } else {
+        systemInstruction =
+          "You are Coach Zephyr, the high-energy personal fitness trainer for 'Fit in Blink'. You speak directly to the user in a natural, athletic, and motivating tone. Keep spoken responses short, punchy (1 to 3 sentences usually), and clear so the user can easily listen during workout sets, stretches, or meal prep. If asked about workouts, exercises, or form, give crisp cues. If asked about nutrition or macros, give direct targets.";
+      }
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents: message,
+        config: {
+          systemInstruction,
+        },
+      });
+
+      const reply = response.text || "Keep pushing, champion! Let's hit that target!";
+      return res.json({ reply });
+    } catch (err: any) {
+      console.error("Error in /api/live-coach/message:", err);
+      return res.status(500).json({ error: err?.message || "Failed to generate coach response." });
+    }
+  });
+
   // WebSocket Server for Gemini Live API Voice Conversations (gemini-3.1-flash-live-preview)
   const wss = new WebSocketServer({ server, path: "/api/live-ws" });
 
