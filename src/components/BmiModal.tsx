@@ -116,31 +116,31 @@ export const BmiModal: React.FC<BmiModalProps> = ({
   return (
     <div 
       id="bmi-modal-overlay" 
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div 
         id="bmi-modal-card"
-        className="bg-[#141414] rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] border border-[#282828] w-full max-w-xl overflow-hidden flex flex-col my-auto animate-scaleUp text-slate-100"
+        className="bg-[#141414] rounded-t-3xl sm:rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] border border-[#282828] w-full max-w-xl max-h-[92dvh] sm:max-h-[88vh] overflow-hidden flex flex-col my-0 sm:my-auto animate-scaleUp text-slate-100"
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 bg-[#181818] flex items-start justify-between gap-3 border-b border-[#282828]">
+        <div className="p-4 sm:p-6 bg-[#181818] flex items-start justify-between gap-3 border-b border-[#282828] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#00FF66] text-black flex items-center justify-center font-bold shadow-[0_0_12px_rgba(0,255,102,0.4)] shrink-0">
               <Scale className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white font-heading">
+                <h2 className="text-base sm:text-xl font-black uppercase tracking-tight text-white font-heading">
                   BMI Index & Health Status
                 </h2>
                 <span className="text-[10px] font-mono font-bold text-[#00FF66] bg-[#12281a] border border-[#00FF66]/30 px-2 py-0.5 rounded-full uppercase">
                   WHO Standard
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
                 Body Mass Index calculation calibrated to your height and weight.
               </p>
             </div>
@@ -148,7 +148,7 @@ export const BmiModal: React.FC<BmiModalProps> = ({
           <button
             id="close-bmi-modal-btn"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 hover:bg-[#222222] rounded-xl transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-2 hover:bg-[#222222] rounded-xl transition-colors cursor-pointer shrink-0"
             aria-label="Close BMI modal"
           >
             <X className="w-5 h-5" />
@@ -156,7 +156,7 @@ export const BmiModal: React.FC<BmiModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-4 sm:p-6 space-y-6 overflow-y-auto max-h-[78vh]">
+        <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 overflow-y-auto overscroll-contain flex-1">
           
           {/* Main BMI Result Display Card */}
           <div className="p-5 rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a] transition-all">

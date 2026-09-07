@@ -270,6 +270,8 @@ export default function App() {
                 const el = document.getElementById('fitness-guide-section');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
+              onOpenMetrics={() => setIsMetricsModalOpen(true)}
+              onOpenBmi={() => setIsBmiModalOpen(true)}
             />
 
             {/* 24-Hour Endless Cycle Countdown & Live Shift Controller */}

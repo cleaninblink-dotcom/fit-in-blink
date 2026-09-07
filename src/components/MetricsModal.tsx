@@ -88,166 +88,193 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+    <div 
+      id="metrics-modal-overlay"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isOnboarding) onClose();
+      }}
+    >
       <div 
         id="metrics-modal-card"
-        className="w-full max-w-xl bg-[#161616] border border-[#282828] rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden my-6 transition-all text-slate-100"
+        className="w-full max-w-xl max-h-[92dvh] sm:max-h-[88vh] bg-[#161616] border border-[#282828] rounded-t-3xl sm:rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col my-0 sm:my-auto transition-all text-slate-100"
       >
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-[#282828] flex items-center justify-between bg-[#141414]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-[#14281a] text-[#00FF66] border border-[#00FF66]/30">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <h2 className="text-base font-black text-white tracking-tight uppercase font-heading">
-                {isOnboarding ? 'Welcome to Fit in Blink' : 'Update Your Physical Profile'}
+        {/* Header - Fixed at top */}
+        <div className="px-4 sm:px-6 py-4 border-b border-[#282828] flex items-center justify-between bg-[#141414] shrink-0">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-[#14281a] text-[#00FF66] border border-[#00FF66]/30 shrink-0">
+              <Scale className="w-4 h-4" />
+            </span>
+            <div>
+              <h2 className="text-sm sm:text-base font-black text-white tracking-tight uppercase font-heading flex items-center gap-2">
+                <span>{isOnboarding ? 'Welcome to Fit in Blink' : 'Physical Profile & Metrics'}</span>
               </h2>
+              <p className="text-[11px] sm:text-xs text-slate-400 font-medium line-clamp-1">
+                {isOnboarding 
+                  ? 'Set your baseline weight, height & goals'
+                  : 'Update weight, height & goals to recalculate macros'}
+              </p>
             </div>
-            <p className="text-xs text-slate-400 mt-1 font-medium">
-              {isOnboarding 
-                ? 'Enter your baseline metrics to calculate exact Mifflin-St Jeor macros and generate your routine.'
-                : 'Adjust your metrics anytime to immediately recalculate macros and volume.'}
-            </p>
           </div>
           {!isOnboarding && (
             <button
               id="close-metrics-modal-btn"
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-[#252525] transition-colors cursor-pointer"
+              className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-[#252525] transition-colors cursor-pointer shrink-0"
+              aria-label="Close physical profile modal"
             >
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Weight & Height Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Weight */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="input-weight" className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                  Current Weight
-                </label>
-                <div className="flex rounded-lg bg-[#1f1f1f] p-0.5 border border-[#333333] text-[11px] font-mono">
-                  <button
-                    type="button"
-                    onClick={() => handleUnitWeightChange('kg')}
-                    className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      weightUnit === 'kg' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    kg
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUnitWeightChange('lbs')}
-                    className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      weightUnit === 'lbs' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    lbs
-                  </button>
-                </div>
+        {/* Form Body - Scrollable with clear mobile spacing */}
+        <form id="physical-profile-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 sm:space-y-5">
+          {/* FEATURE HIGHLIGHT: CURRENT WEIGHT SECTION (Always Top & Prominent) */}
+          <div className="p-4 bg-[#1b1b1b] border-2 border-[#00FF66]/50 rounded-2xl space-y-2.5 shadow-[0_0_15px_rgba(0,255,102,0.1)]">
+            <div className="flex items-center justify-between">
+              <label htmlFor="input-weight" className="text-xs font-bold uppercase tracking-wider text-[#00FF66] font-mono flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-[#00FF66]" />
+                <span>Current Body Weight (Required)</span>
+              </label>
+
+              {/* kg / lbs Toggle */}
+              <div className="flex rounded-lg bg-[#141414] p-0.5 border border-[#333333] text-xs font-mono">
+                <button
+                  type="button"
+                  id="weight-unit-kg-btn"
+                  onClick={() => handleUnitWeightChange('kg')}
+                  className={`px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    weightUnit === 'kg' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  kg
+                </button>
+                <button
+                  type="button"
+                  id="weight-unit-lbs-btn"
+                  onClick={() => handleUnitWeightChange('lbs')}
+                  className={`px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    weightUnit === 'lbs' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  lbs
+                </button>
               </div>
+            </div>
+
+            <div className="relative">
+              <input
+                id="input-weight"
+                name="weight"
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min={weightUnit === 'kg' ? 30 : 66}
+                max={weightUnit === 'kg' ? 250 : 550}
+                value={weight || ''}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                required
+                className="w-full px-4 py-3 bg-[#141414] border border-[#383838] focus:border-[#00FF66] rounded-xl text-white font-mono font-black text-xl sm:text-2xl focus:outline-none focus:ring-1 focus:ring-[#00FF66] transition-colors"
+                placeholder={weightUnit === 'kg' ? 'e.g. 75.0' : 'e.g. 165.0'}
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[#00FF66] font-mono uppercase pointer-events-none">
+                {weightUnit}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span>Calibrates protein (2.0g/kg) and daily metabolic burn</span>
+              <span className="font-mono text-[#00FF66] font-bold">
+                {weight > 0 ? `${weight} ${weightUnit}` : 'Set weight'}
+              </span>
+            </div>
+          </div>
+
+          {/* HEIGHT SECTION */}
+          <div className="p-4 bg-[#1a1a1a] border border-[#2b2b2b] rounded-2xl space-y-2.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">
+                Stature (Height)
+              </label>
+              <div className="flex rounded-lg bg-[#141414] p-0.5 border border-[#333333] text-xs font-mono">
+                <button
+                  type="button"
+                  id="height-unit-cm-btn"
+                  onClick={() => handleUnitHeightChange('cm')}
+                  className={`px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    heightUnit === 'cm' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  cm
+                </button>
+                <button
+                  type="button"
+                  id="height-unit-ft-btn"
+                  onClick={() => handleUnitHeightChange('ft')}
+                  className={`px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    heightUnit === 'ft' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  ft/in
+                </button>
+              </div>
+            </div>
+
+            {heightUnit === 'cm' ? (
               <div className="relative">
                 <input
-                  id="input-weight"
+                  id="input-height-cm"
+                  name="heightCm"
                   type="number"
-                  min={weightUnit === 'kg' ? 30 : 66}
-                  max={weightUnit === 'kg' ? 250 : 550}
-                  value={weight || ''}
-                  onChange={(e) => setWeight(Number(e.target.value))}
+                  inputMode="numeric"
+                  min={100}
+                  max={240}
+                  value={heightCm || ''}
+                  onChange={(e) => setHeightCm(Number(e.target.value))}
                   required
-                  className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
-                  placeholder={weightUnit === 'kg' ? '75' : '165'}
+                  className="w-full px-4 py-3 bg-[#141414] border border-[#383838] focus:border-[#00FF66] rounded-xl text-white font-mono font-bold text-lg focus:outline-none focus:ring-1 focus:ring-[#00FF66] transition-colors"
+                  placeholder="178"
                 />
-                <span className="absolute right-3.5 top-2.5 text-xs text-slate-400 font-mono font-medium pointer-events-none">
-                  {weightUnit}
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-mono font-bold pointer-events-none">
+                  cm
                 </span>
               </div>
-            </div>
-
-            {/* Height */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                  Height
-                </label>
-                <div className="flex rounded-lg bg-[#1f1f1f] p-0.5 border border-[#333333] text-[11px] font-mono">
-                  <button
-                    type="button"
-                    onClick={() => handleUnitHeightChange('cm')}
-                    className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      heightUnit === 'cm' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    cm
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUnitHeightChange('ft')}
-                    className={`px-2.5 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      heightUnit === 'ft' ? 'bg-[#00FF66] text-black font-black shadow-xs' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    ft/in
-                  </button>
-                </div>
-              </div>
-
-              {heightUnit === 'cm' ? (
+            ) : (
+              <div className="grid grid-cols-2 gap-2.5">
                 <div className="relative">
                   <input
-                    id="input-height-cm"
+                    id="input-height-ft"
+                    name="heightFeet"
                     type="number"
-                    min={100}
-                    max={230}
-                    value={heightCm || ''}
-                    onChange={(e) => setHeightCm(Number(e.target.value))}
+                    inputMode="numeric"
+                    min={3}
+                    max={7}
+                    value={heightFeet || ''}
+                    onChange={(e) => setHeightFeet(Number(e.target.value))}
                     required
-                    className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
-                    placeholder="178"
+                    className="w-full px-3.5 py-3 bg-[#141414] border border-[#383838] focus:border-[#00FF66] rounded-xl text-white font-mono font-bold text-lg focus:outline-none"
+                    placeholder="5"
                   />
-                  <span className="absolute right-3.5 top-2.5 text-xs text-slate-400 font-mono font-medium pointer-events-none">
-                    cm
-                  </span>
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono font-bold pointer-events-none">ft</span>
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative">
-                    <input
-                      id="input-height-ft"
-                      type="number"
-                      min={3}
-                      max={7}
-                      value={heightFeet || ''}
-                      onChange={(e) => setHeightFeet(Number(e.target.value))}
-                      required
-                      className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
-                      placeholder="5"
-                    />
-                    <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono font-medium">ft</span>
-                  </div>
-                  <div className="relative">
-                    <input
-                      id="input-height-in"
-                      type="number"
-                      min={0}
-                      max={11}
-                      value={heightInches || ''}
-                      onChange={(e) => setHeightInches(Number(e.target.value))}
-                      required
-                      className="w-full px-3.5 py-2.5 bg-[#1f1f1f] border border-[#333333] rounded-xl text-white font-mono font-bold focus:outline-none focus:border-[#00FF66] focus:ring-1 focus:ring-[#00FF66] text-sm"
-                      placeholder="10"
-                    />
-                    <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-mono font-medium">in</span>
-                  </div>
+                <div className="relative">
+                  <input
+                    id="input-height-in"
+                    name="heightInches"
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={11}
+                    value={heightInches !== undefined ? heightInches : ''}
+                    onChange={(e) => setHeightInches(Number(e.target.value))}
+                    required
+                    className="w-full px-3.5 py-3 bg-[#141414] border border-[#383838] focus:border-[#00FF66] rounded-xl text-white font-mono font-bold text-lg focus:outline-none"
+                    placeholder="10"
+                  />
+                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono font-bold pointer-events-none">in</span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Quick BMI Preview & Deep-Dive Link */}

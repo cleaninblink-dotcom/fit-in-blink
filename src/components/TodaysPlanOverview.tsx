@@ -10,7 +10,10 @@ import {
   Calendar,
   Apple,
   Compass,
-  Zap
+  Zap,
+  Scale,
+  SlidersHorizontal,
+  UserCheck
 } from 'lucide-react';
 import { DailyWorkoutPlan, MacroTargets, UserProfile, Goal } from '../types';
 
@@ -21,6 +24,8 @@ interface TodaysPlanOverviewProps {
   onNavigateToWorkout: () => void;
   onNavigateToDiet: () => void;
   onNavigateToGuide?: () => void;
+  onOpenMetrics?: () => void;
+  onOpenBmi?: () => void;
 }
 
 const GOAL_LABELS: Record<Goal, string> = {
@@ -36,6 +41,8 @@ export const TodaysPlanOverview: React.FC<TodaysPlanOverviewProps> = ({
   onNavigateToWorkout,
   onNavigateToDiet,
   onNavigateToGuide,
+  onOpenMetrics,
+  onOpenBmi,
 }) => {
   // Calculate completion percentage or readiness score
   const completionRatio = Math.min(100, Math.round((workoutPlan.durationMinutes / 60) * 100));
@@ -67,6 +74,62 @@ export const TodaysPlanOverview: React.FC<TodaysPlanOverviewProps> = ({
             <span className="text-[#00FF66] font-bold bg-[#14281a] px-2.5 py-0.5 rounded-full border border-[#00FF66]/30 uppercase text-[11px]">
               {GOAL_LABELS[profile.goal]}
             </span>
+          </div>
+        </div>
+
+        {/* Physical Profile & Weight Metric Strip (Always Visible & Highly Interactive on Mobile) */}
+        <div 
+          id="dashboard-physical-profile-strip"
+          className="p-3.5 sm:p-4 bg-[#141414] border border-[#2b2b2b] hover:border-[#00FF66]/50 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-colors"
+        >
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="w-9 h-9 rounded-xl bg-[#14281a] border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shrink-0">
+              <Scale className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-black uppercase tracking-wider text-white font-heading">
+                  Physical Profile:
+                </span>
+                <span className="text-xs font-mono font-bold text-[#00FF66] bg-[#12281a] border border-[#00FF66]/30 px-2 py-0.5 rounded-md">
+                  Weight: {profile.weight} {profile.weightUnit}
+                </span>
+                <span className="text-xs font-mono text-slate-300 bg-[#222222] border border-[#333333] px-2 py-0.5 rounded-md">
+                  Height: {profile.heightUnit === 'ft' ? `${profile.heightFeet}'${profile.heightInches}"` : `${profile.heightCm}cm`}
+                </span>
+                <span className="text-xs font-mono text-slate-400 bg-[#222222] border border-[#333333] px-2 py-0.5 rounded-md">
+                  Age: {profile.age}y • {profile.gender}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
+                Calibrated to Mifflin-St Jeor TDEE & 2.0g/kg protein targets.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+            {onOpenBmi && (
+              <button
+                type="button"
+                id="overview-check-bmi-btn"
+                onClick={onOpenBmi}
+                className="flex-1 sm:flex-initial px-3 py-1.5 bg-[#1f1f1f] hover:bg-[#282828] border border-[#333333] hover:border-[#00FF66]/40 text-slate-300 hover:text-white rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <Scale className="w-3.5 h-3.5 text-[#00FF66]" />
+                <span>Check BMI</span>
+              </button>
+            )}
+            {onOpenMetrics && (
+              <button
+                type="button"
+                id="overview-edit-profile-btn"
+                onClick={onOpenMetrics}
+                className="flex-1 sm:flex-initial px-3.5 py-1.5 bg-[#00FF66] hover:bg-[#00e65c] text-black font-black uppercase text-xs tracking-wider rounded-xl transition-all shadow-[0_0_12px_rgba(0,255,102,0.3)] cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Edit Profile & Weight</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -4,15 +4,22 @@
     <meta charset="UTF-8" />
     <script>
       (function() {
-        // Suppress benign Vite HMR websocket connection messages in container preview
+        // Suppress benign Vite HMR messages and websocket notices in container environment
         var origError = console.error;
         console.error = function() {
           var firstArg = arguments[0];
-          if (typeof firstArg === 'string' && firstArg.indexOf('[vite] failed to connect to websocket') !== -1) {
-            console.debug.apply(console, arguments);
+          if (typeof firstArg === 'string' && (firstArg.indexOf('[vite]') !== -1 || firstArg.indexOf('WebSocket') !== -1)) {
             return;
           }
           origError.apply(console, arguments);
+        };
+        var origWarn = console.warn;
+        console.warn = function() {
+          var firstArg = arguments[0];
+          if (typeof firstArg === 'string' && firstArg.indexOf('[vite]') !== -1) {
+            return;
+          }
+          origWarn.apply(console, arguments);
         };
       })();
     </script>

@@ -146,15 +146,14 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="open-metrics-button"
             onClick={onOpenMetrics}
-            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 bg-[#1b1b1b] hover:bg-[#242424] border border-[#2e2e2e] hover:border-[#00FF66]/50 rounded-xl text-xs transition-all text-slate-100 group cursor-pointer shrink-0 active:scale-95"
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 bg-[#1b1b1b] hover:bg-[#242424] border border-[#2e2e2e] hover:border-[#00FF66]/50 rounded-xl text-xs transition-all text-slate-100 group cursor-pointer shrink-0 active:scale-95 shadow-xs"
             title="Edit Weight, Height, Age, and Target Goals"
             aria-label="Open physical profile metrics"
           >
             <SlidersHorizontal className="w-3.5 h-3.5 text-[#00FF66] group-hover:rotate-12 transition-transform shrink-0" />
-            <span className="font-mono font-bold text-white text-xs hidden md:inline">
+            <span className="font-mono font-bold text-white text-[11px] sm:text-xs">
               {formatWeight()}
             </span>
-            <span className="font-bold text-[11px] text-[#00FF66] hidden sm:inline md:hidden">Profile</span>
           </button>
 
           {/* Utilities Group in one neat cluster */}
