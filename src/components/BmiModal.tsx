@@ -20,7 +20,6 @@ interface BmiModalProps {
   onClose: () => void;
   profile: UserProfile;
   onUpdateWeight?: (newWeight: number, unit: 'kg' | 'lbs') => void;
-  onOpenVoiceCoach?: () => void;
 }
 
 export const BmiModal: React.FC<BmiModalProps> = ({
@@ -28,7 +27,6 @@ export const BmiModal: React.FC<BmiModalProps> = ({
   onClose,
   profile,
   onUpdateWeight,
-  onOpenVoiceCoach,
 }) => {
   // Convert profile to initial values
   const initialWeightKg = useMemo(() => {
@@ -406,35 +404,6 @@ export const BmiModal: React.FC<BmiModalProps> = ({
               </p>
             </div>
           </div>
-
-          {/* AI Live Voice Coach Prompt if available */}
-          {onOpenVoiceCoach && (
-            <div 
-              onClick={() => {
-                onClose();
-                onOpenVoiceCoach();
-              }}
-              className="p-3 bg-[#1e1e1e] hover:bg-[#252525] border border-[#2f2f2f] hover:border-[#00FF66]/50 text-white rounded-2xl flex items-center justify-between gap-3 cursor-pointer transition-colors shadow-sm group"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-[#00FF66] text-black flex items-center justify-center font-bold shrink-0 shadow-[0_0_8px_rgba(0,255,102,0.4)]">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-bold text-white">
-                    Discuss Body Composition with Voice Coach
-                  </p>
-                  <p className="text-[10px] text-slate-400">
-                    Ask Coach Zephyr how your BMI affects your macro surplus/deficit in English or Hindi.
-                  </p>
-                </div>
-              </div>
-              <div className="text-[#00FF66] group-hover:translate-x-0.5 transition-transform shrink-0">
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </div>
-          )}
-
         </div>
 
         {/* Footer */}

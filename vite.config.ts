@@ -14,8 +14,8 @@ export default defineConfig(() => {
         includeAssets: ['favicon.png', 'logo.png', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
         manifest: {
           id: '/',
-          name: 'Fit in Blink',
-          short_name: 'FitInBlink',
+          name: 'fitinblink',
+          short_name: 'fitinblink',
           description: 'Smart personalized fitness and nutrition macro targets with dynamic daily workouts.',
           theme_color: '#ffffff',
           background_color: '#f8fafc',
@@ -89,7 +89,9 @@ export default defineConfig(() => {
       },
     },
     server: {
-      hmr: false,
+      hmr: {
+        overlay: false,
+      },
     },
   };
 });

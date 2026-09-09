@@ -1,60 +1,68 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'amp-ad': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        layout?: string;
+        width?: string | number;
+        height?: string | number;
+        type?: string;
+        'data-ad-client'?: string;
+        'data-ad-slot'?: string;
+        [key: string]: any;
+      };
+    }
+  }
+}
 
 interface GoogleAdUnitProps {
   slot?: string;
   client?: string;
-  format?: string;
-  responsive?: boolean;
+  width?: number | string;
+  height?: number | string;
+  layout?: string;
+  type?: string;
   className?: string;
-}
-
-declare global {
-  interface Window {
-    adsbygoogle: unknown[];
-  }
 }
 
 export const GoogleAdUnit: React.FC<GoogleAdUnitProps> = ({
   slot = '1600236671',
   client = 'ca-pub-9398536967947214',
-  format = 'auto',
-  responsive = true,
+  width = 728,
+  height = 90,
+  layout = 'fixed',
+  type = 'adsense',
   className = '',
 }) => {
-  const adRef = useRef<HTMLModElement | null>(null);
-  const isPushed = useRef(false);
-
-  useEffect(() => {
-    if (isPushed.current) return;
-    try {
-      if (typeof window !== 'undefined') {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        isPushed.current = true;
-      }
-    } catch (err) {
-      console.warn('Google AdSense render notice:', err);
-    }
-  }, []);
-
   return (
-    <div className={`w-full overflow-hidden my-4 flex flex-col items-center justify-center ${className}`}>
-      <div className="w-full max-w-5xl bg-white/60 backdrop-blur-xs border border-slate-200/80 rounded-2xl p-3 shadow-2xs text-center">
-        <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">
-          Advertisement
+    <div 
+      id={`amp-ad-unit-${slot}`} 
+      className={`w-full overflow-hidden my-6 flex flex-col items-center justify-center ${className}`}
+    >
+      <div className="w-full max-w-4xl bg-[#161616] border border-[#282828] rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 text-center shadow-[0_4px_24px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-[10px] font-mono font-bold tracking-widest text-slate-400 uppercase bg-[#1f1f1f] border border-[#333] px-2.5 py-0.5 rounded-full">
+            Sponsored Advertisement
+          </span>
         </div>
-        <div className="min-h-[90px] flex items-center justify-center overflow-hidden">
-          {/* Chair Ad Unit */}
-          <ins
-            ref={adRef}
-            className="adsbygoogle"
-            style={{ display: 'block', minWidth: '250px', width: '100%' }}
+        
+        {/* Responsive container for AMP Ad Unit */}
+        <div className="w-full overflow-x-auto flex items-center justify-center py-1">
+          <amp-ad
+            layout={layout}
+            width={width}
+            height={height}
+            type={type}
             data-ad-client={client}
             data-ad-slot={slot}
-            data-ad-format={format}
-            data-full-width-responsive={responsive ? 'true' : 'false'}
-          />
+            style={{ maxWidth: '100%' }}
+          >
+          </amp-ad>
         </div>
       </div>
     </div>
   );
 };
+
+

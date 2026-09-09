@@ -610,7 +610,8 @@ sonobi.com, 4a289cdd79, RESELLER, d1a215d9eb5aee9e
 insticator.com, 33982127-4b91-4d23-9273-e18b7738b70f, RESELLER, b3511ffcafb23a32
 freewheel.tv, 535664-r-523319, RESELLER
 
-#Google AdSense
+#Google AdSense / AdMob
+google.com, pub-9398536967947214, DIRECT, f08c47fec0942fa0
 google.com, pub-6022628118304495, DIRECT, f08c47fec0942fa0
 rubiconproject.com, 28803, DIRECT, 0bfd66d529a55807
 

@@ -23,7 +23,9 @@ import {
   Info,
   Dumbbell,
   Zap,
-  Radio
+  Radio,
+  Mic,
+  MicOff
 } from 'lucide-react';
 import { Exercise, DailyWorkoutPlan } from '../types';
 import { 
@@ -34,6 +36,14 @@ import {
   playBreakStartSound, 
   playWorkoutVictoryFanfare 
 } from '../utils/audio';
+import {
+  speakExerciseStart,
+  speakSetTransition,
+  speakRestComplete,
+  speakWorkoutComplete,
+  cancelSpeech,
+  isSpeechSynthesisSupported,
+} from '../utils/speech';
 import { getExerciseVideoVisual } from '../utils/exerciseVideos';
 import { useFitness } from '../context/FitnessContext';
 
@@ -71,6 +81,31 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
+
+  // Web Speech API Voice Coach State
+  const [isVoiceCoachEnabled, setIsVoiceCoachEnabled] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('fitinblink_voice_coach');
+      return stored !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleVoiceCoach = () => {
+    setIsVoiceCoachEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('fitinblink_voice_coach', String(next));
+      } catch {
+        // Ignore storage error
+      }
+      if (!next) {
+        cancelSpeech();
+      }
+      return next;
+    });
+  };
 
   // Durations
   const DEFAULT_BREAK_SECONDS = 15; // 15-second break as explicitly requested
@@ -112,6 +147,8 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
   activeSetDurationRef.current = activeSetDuration;
   const isMutedRef = useRef(isMuted);
   isMutedRef.current = isMuted;
+  const isVoiceCoachEnabledRef = useRef(isVoiceCoachEnabled);
+  isVoiceCoachEnabledRef.current = isVoiceCoachEnabled;
 
   // Calculate cumulative sets completed up to current point
   const currentStepNumber = useMemo(() => {
@@ -122,6 +159,19 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
     count += setIndex;
     return Math.min(count, totalWorkoutSets);
   }, [exerciseIndex, setIndex, workoutPlan, totalWorkoutSets]);
+
+  // Clean up speech synthesis when paused or unmounted
+  useEffect(() => {
+    if (isPaused) {
+      cancelSpeech();
+    }
+  }, [isPaused]);
+
+  useEffect(() => {
+    return () => {
+      cancelSpeech();
+    };
+  }, []);
 
   // Sync with initial indices when opening
   useEffect(() => {
@@ -136,6 +186,13 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
       if (!isMuted) {
         playStartSetSound();
       }
+      // Audio Cue 1: Exercise Start
+      const targetEx = workoutPlan.exercises[initialExerciseIndex];
+      if (targetEx && !isMuted && isVoiceCoachEnabled) {
+        speakExerciseStart(targetEx.name, initialSetIndex + 1, targetEx.sets, targetEx.reps);
+      }
+    } else {
+      cancelSpeech();
     }
   }, [isOpen, initialExerciseIndex, initialSetIndex]);
 
@@ -173,6 +230,9 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
       if (!isMutedRef.current) {
         playWorkoutVictoryFanfare();
       }
+      if (!isMutedRef.current && isVoiceCoachEnabledRef.current) {
+        speakWorkoutComplete();
+      }
       setTimeout(() => {
         onCompleteWorkoutRef.current();
       }, 600);
@@ -185,6 +245,10 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
     if (!isMutedRef.current) {
       playBreakStartSound();
     }
+    // Audio Cue 2: Set Transition & Rest Break Start
+    if (!isMutedRef.current && isVoiceCoachEnabledRef.current) {
+      speakSetTransition(curSetIdx + 1, curEx.sets, breakDurationRef.current);
+    }
   }, []);
 
   // Called automatically when 15-second break timer reaches 0
@@ -193,13 +257,27 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
     if (!curEx) return;
 
     const curSetIdx = setIndexRef.current;
+    const curExIdx = exerciseIndexRef.current;
+    const curPlan = workoutPlanRef.current;
     const isLastSetOfCurrentEx = curSetIdx + 1 >= curEx.sets;
+
+    let nextSetNumber = curSetIdx + 2;
+    let nextExName = curEx.name;
+    let totalSetsForNext = curEx.sets;
+    let isNewExercise = false;
 
     if (!isLastSetOfCurrentEx) {
       // Start next set for the same exercise (e.g. Set 2 or Set 3)
       setSetIndex((prev) => prev + 1);
     } else {
       // Move to first set of the next exercise
+      const nextEx = curPlan.exercises[curExIdx + 1];
+      if (nextEx) {
+        nextExName = nextEx.name;
+        nextSetNumber = 1;
+        totalSetsForNext = nextEx.sets;
+        isNewExercise = true;
+      }
       setExerciseIndex((prev) => prev + 1);
       setSetIndex(0);
     }
@@ -210,6 +288,10 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
     setActiveSetElapsed(0);
     if (!isMutedRef.current) {
       playStartSetSound();
+    }
+    // Audio Cue 3: Rest Timer Completion
+    if (!isMutedRef.current && isVoiceCoachEnabledRef.current) {
+      speakRestComplete(nextSetNumber, totalSetsForNext, nextExName, isNewExercise);
     }
   }, []);
 
@@ -278,9 +360,14 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
   // Navigation: Jump to Next Set / Previous Set manually if needed
   const handleJumpNextSet = () => {
     if (!currentExercise) return;
+    let targetEx = currentExercise;
+    let targetSet = setIndex + 1;
     if (setIndex + 1 < currentExercise.sets) {
       setSetIndex((prev) => prev + 1);
+      targetSet = setIndex + 2;
     } else if (exerciseIndex + 1 < workoutPlan.exercises.length) {
+      targetEx = workoutPlan.exercises[exerciseIndex + 1];
+      targetSet = 1;
       setExerciseIndex((prev) => prev + 1);
       setSetIndex(0);
     }
@@ -288,20 +375,34 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
     setActiveSetSecondsLeft(activeSetDuration);
     setActiveSetElapsed(0);
     if (!isMuted) playStartSetSound();
+    if (!isMuted && isVoiceCoachEnabled && targetEx) {
+      speakExerciseStart(targetEx.name, targetSet, targetEx.sets, targetEx.reps);
+    }
   };
 
   const handleJumpPrevSet = () => {
     if (setIndex > 0) {
       setSetIndex((prev) => prev - 1);
+      const targetSet = setIndex;
+      setPhase('active_set');
+      setActiveSetSecondsLeft(activeSetDuration);
+      setActiveSetElapsed(0);
+      if (!isMuted) playStartSetSound();
+      if (!isMuted && isVoiceCoachEnabled && currentExercise) {
+        speakExerciseStart(currentExercise.name, targetSet, currentExercise.sets, currentExercise.reps);
+      }
     } else if (exerciseIndex > 0) {
       const prevEx = workoutPlan.exercises[exerciseIndex - 1];
       setExerciseIndex((prev) => prev - 1);
       setSetIndex(prevEx.sets - 1);
+      setPhase('active_set');
+      setActiveSetSecondsLeft(activeSetDuration);
+      setActiveSetElapsed(0);
+      if (!isMuted) playStartSetSound();
+      if (!isMuted && isVoiceCoachEnabled && prevEx) {
+        speakExerciseStart(prevEx.name, prevEx.sets, prevEx.sets, prevEx.reps);
+      }
     }
-    setPhase('active_set');
-    setActiveSetSecondsLeft(activeSetDuration);
-    setActiveSetElapsed(0);
-    if (!isMuted) playStartSetSound();
   };
 
   const formatTimer = (seconds: number) => {
@@ -346,6 +447,28 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
             </span>
           </div>
           <div className="flex items-center gap-1">
+            {/* Voice Coach Toggle in Dock */}
+            {isSpeechSynthesisSupported() && (
+              <button
+                onClick={toggleVoiceCoach}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  isVoiceCoachEnabled && !isMuted
+                    ? 'text-cyan-700 bg-cyan-50 hover:bg-cyan-100'
+                    : 'text-slate-400 hover:bg-slate-100'
+                }`}
+                title={
+                  isVoiceCoachEnabled && !isMuted
+                    ? 'Voice Coach Active (Web Speech API cues)'
+                    : 'Voice Coach Muted (Click to enable audio cues)'
+                }
+              >
+                {isVoiceCoachEnabled && !isMuted ? (
+                  <Mic className="w-3.5 h-3.5 text-cyan-600" />
+                ) : (
+                  <MicOff className="w-3.5 h-3.5" />
+                )}
+              </button>
+            )}
             <button
               onClick={() => setIsExpanded(true)}
               className="p-1.5 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
@@ -433,14 +556,50 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
                 <span className="text-[10px] font-mono font-bold text-lime-800 bg-lime-100 px-2 py-0.5 rounded-full border border-lime-200">
                   Auto-Pilot Active
                 </span>
+                {isVoiceCoachEnabled && !isMuted && (
+                  <span className="text-[10px] font-mono font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded-full border border-cyan-200 hidden sm:inline-flex items-center gap-1">
+                    <Mic className="w-3 h-3 text-cyan-600 animate-pulse" /> Voice Cues
+                  </span>
+                )}
               </div>
               <p className="text-[10px] text-slate-500 font-medium">
-                Continuous auto-progression: Sets automatically advance with 15s recovery intervals
+                Continuous auto-progression: Sets advance with 15s recovery intervals & Web Speech audio cues
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
+            {/* Voice Coach Web Speech Toggle */}
+            {isSpeechSynthesisSupported() && (
+              <button
+                type="button"
+                id="player-voice-coach-toggle-btn"
+                onClick={toggleVoiceCoach}
+                className={`p-2 rounded-xl border text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                  isVoiceCoachEnabled && !isMuted
+                    ? 'bg-cyan-50 border-cyan-300 text-cyan-800 shadow-xs ring-1 ring-cyan-400/30'
+                    : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-100'
+                }`}
+                title={
+                  isVoiceCoachEnabled && !isMuted
+                    ? 'Voice Coach Active: Spoken audio cues for exercise start, rest timer completion, and set transitions'
+                    : 'Voice Coach Muted: Click to enable Web Speech audio cues'
+                }
+              >
+                {isVoiceCoachEnabled && !isMuted ? (
+                  <>
+                    <Mic className="w-4 h-4 text-cyan-600" />
+                    <span className="text-[11px] font-bold hidden sm:inline">Voice Coach</span>
+                  </>
+                ) : (
+                  <>
+                    <MicOff className="w-4 h-4" />
+                    <span className="text-[11px] font-medium hidden sm:inline">Voice Off</span>
+                  </>
+                )}
+              </button>
+            )}
+
             {/* Sound Toggle */}
             <button
               type="button"
@@ -451,7 +610,7 @@ export const AutoWorkoutPlayer: React.FC<AutoWorkoutPlayerProps> = ({
                   ? 'bg-amber-50 border-amber-200 text-amber-700' 
                   : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
-              title={isMuted ? 'Unmute audio cues' : 'Mute audio cues'}
+              title={isMuted ? 'Unmute all audio and voice cues' : 'Mute all audio and voice cues'}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-lime-600" />}
             </button>

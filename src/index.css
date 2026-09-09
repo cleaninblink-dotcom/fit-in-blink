@@ -3,15 +3,15 @@
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #121212;
-    color: #f8fafc;
+    background-color: #191D26;
+    color: #F8FAFC;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Typography Hierarchy */
+/* Typography Hierarchy matching Fitonomy Design System */
 .font-metric {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 800;
@@ -19,29 +19,29 @@
 }
 
 .font-heading {
-  font-family: 'Montserrat', 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .font-display {
-  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Custom scrollbar matching Dark Energy Theme */
+/* Custom scrollbar matching Fitonomy Slate Dark Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #121212;
+  background: #191D26;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #31353E;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a3a;
+  background: #3B82F6;
 }
 
 /* Mobile GPU Stabilization for Sticky Navigation */
@@ -65,39 +65,77 @@
   scrollbar-width: none;
 }
 
-/* Dynamic & High-Energy Glow Utilities */
+/* Fitonomy Signature Royal Blue & Accent Glow Utilities */
+.glow-primary {
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
+}
+.glow-primary-sm {
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.28);
+}
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.32);
+}
+.glow-cyan-sm {
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
 .glow-neon {
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.28);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.35);
 }
 .glow-neon-sm {
-  box-shadow: 0 0 10px rgba(0, 255, 102, 0.22);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.25);
 }
 .glow-orange {
-  box-shadow: 0 0 20px rgba(255, 85, 0, 0.3);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
 }
 .glow-orange-sm {
-  box-shadow: 0 0 10px rgba(255, 85, 0, 0.22);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.22);
 }
 
 /* Dynamic Colors */
+.text-primary-blue {
+  color: #2563EB;
+}
+.bg-primary-blue {
+  background-color: #2563EB;
+}
+.border-primary-blue {
+  border-color: #2563EB;
+}
+
 .text-neon {
-  color: #00FF66;
+  color: #38BDF8;
 }
 .bg-neon {
-  background-color: #00FF66;
+  background-color: #38BDF8;
 }
 .border-neon {
-  border-color: #00FF66;
+  border-color: #38BDF8;
 }
 
 .text-orange-burn {
-  color: #FF5500;
+  color: #F97316;
 }
 .bg-orange-burn {
-  background-color: #FF5500;
+  background-color: #F97316;
 }
 .border-orange-burn {
-  border-color: #FF5500;
+  border-color: #F97316;
+}
+
+/* Fitonomy Gradient Buttons & Cards */
+.fitonomy-gradient-btn {
+  background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fitonomy-gradient-btn:hover {
+  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+  transform: translateY(-1px);
+}
+.fitonomy-gradient-btn:active {
+  transform: translateY(0);
 }
 
 /* Micro-animations for Workout Completion Checkboxes */
@@ -107,7 +145,7 @@
   }
   50% {
     transform: scale(1.18);
-    box-shadow: 0 0 14px rgba(0, 255, 102, 0.6);
+    box-shadow: 0 0 14px rgba(37, 99, 235, 0.6);
   }
   100% {
     transform: scale(1);
@@ -120,13 +158,14 @@
 
 @keyframes pulseNeon {
   0%, 100% {
-    box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
   }
   50% {
-    box-shadow: 0 0 22px rgba(0, 255, 102, 0.6);
+    box-shadow: 0 0 24px rgba(37, 99, 235, 0.65);
   }
 }
 
 .animate-pulse-neon {
   animation: pulseNeon 2s infinite;
 }
+

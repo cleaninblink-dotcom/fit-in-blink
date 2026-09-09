@@ -44,16 +44,16 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
   return (
     <div 
       id="cycle-countdown-container"
-      className="bg-[#161616] border border-[#282828] hover:border-[#383838] rounded-2xl p-3.5 sm:p-4 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] text-slate-100"
+      className="bg-[#252B37] border border-[#31353E] hover:border-[#3B82F6]/50 rounded-2xl p-3.5 sm:p-4 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.3)] text-slate-100"
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Left: Cycle Badge & Current Active Status */}
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-[#14281a] border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shrink-0 shadow-[0_0_10px_rgba(0,255,102,0.2)]">
+            <div className="w-10 h-10 rounded-xl bg-[#1E293B] border border-[#2563EB]/30 flex items-center justify-center text-[#60A5FA] shrink-0 shadow-[0_0_12px_rgba(37,99,235,0.25)]">
               <Repeat className="w-5 h-5 animate-pulse" />
             </div>
-            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-black text-[#00FF66] border border-[#00FF66]/40 font-extrabold text-[9px] flex items-center justify-center font-mono shadow-sm">
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#191D26] text-[#60A5FA] border border-[#2563EB]/50 font-extrabold text-[9px] flex items-center justify-center font-mono shadow-sm">
               {cycleStatus.activeDayId}
             </span>
           </div>
@@ -61,20 +61,20 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-tight text-white flex items-center gap-1.5 font-heading">
-                <span className="text-slate-400">Active 24h Cycle:</span>
-                <span className="text-[#00FF66]">{activeDay.dayName}</span>
+                <span className="text-[#94A3B8]">Active 24h Cycle:</span>
+                <span className="text-[#60A5FA]">{activeDay.dayName}</span>
               </span>
-              <span className="text-[10px] font-mono font-bold text-[#00FF66] bg-[#12281a] border border-[#00FF66]/30 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-mono font-bold text-[#60A5FA] bg-[#1E293B] border border-[#2563EB]/30 px-2 py-0.5 rounded-full">
                 Loop #{cycleStatus.cycleNumber}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
+            <div className="flex items-center gap-2 mt-0.5 text-xs text-[#94A3B8]">
               <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3 text-[#00FF66]" />
+                <Clock className="w-3 h-3 text-[#60A5FA]" />
                 <span>Next Day ({nextDay.dayName.replace(/^Day \d+:\s*/, '')}) in:</span>
               </span>
-              <span className="font-mono font-bold text-[#00FF66] bg-[#1f1f1f] px-2 py-0.5 rounded border border-[#333333] text-[11px] tracking-wider font-metric">
+              <span className="font-mono font-bold text-[#60A5FA] bg-[#191D26] px-2 py-0.5 rounded border border-[#31353E] text-[11px] tracking-wider font-metric">
                 {formattedCountdown}
               </span>
             </div>
@@ -87,9 +87,9 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
             <button
               id="jump-to-active-day-btn"
               onClick={() => onSelectDay(cycleStatus.activeDayId)}
-              className="px-3 py-1.5 bg-[#00FF66] hover:bg-[#00e65c] text-black font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1 cursor-pointer shadow-[0_0_12px_rgba(0,255,102,0.4)] active:scale-95"
+              className="px-3 py-1.5 fitonomy-gradient-btn text-white font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1 cursor-pointer shadow-[0_0_12px_rgba(37,99,235,0.4)] active:scale-95"
             >
-              <Zap className="w-3.5 h-3.5 fill-black" />
+              <Zap className="w-3.5 h-3.5 fill-white" />
               <span>Jump to Day {cycleStatus.activeDayId} (Active)</span>
             </button>
           )}
@@ -108,7 +108,7 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
               <button
                 id="cancel-reset-cycle-btn"
                 onClick={() => setShowResetConfirm(false)}
-                className="px-2 py-1 bg-[#222222] text-slate-300 font-bold text-[10px] uppercase rounded-lg transition cursor-pointer"
+                className="px-2 py-1 bg-[#191D26] text-slate-300 font-bold text-[10px] uppercase rounded-lg transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -117,10 +117,10 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
             <button
               id="open-reset-cycle-btn"
               onClick={() => setShowResetConfirm(true)}
-              className="px-2.5 py-1.5 bg-[#1f1f1f] hover:bg-[#282828] border border-[#333333] text-slate-300 hover:text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1.5 bg-[#191D26] hover:bg-[#202530] border border-[#31353E] text-[#94A3B8] hover:text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
               title="Reset continuous cycle starting from Day 1: Chest Day"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-[#00FF66]" />
+              <RotateCcw className="w-3.5 h-3.5 text-[#60A5FA]" />
               <span className="text-[11px]">Restart at Day 1</span>
             </button>
           )}
@@ -129,7 +129,7 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
           <button
             id="toggle-cycle-info-btn"
             onClick={() => setShowInfo(!showInfo)}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-[#252525] rounded-xl transition cursor-pointer"
+            className="p-1.5 text-[#94A3B8] hover:text-white hover:bg-[#202530] rounded-xl transition cursor-pointer"
             title="How does the 24-hour cycle work?"
             aria-label="Cycle info"
           >
@@ -139,14 +139,14 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
       </div>
 
       {/* Progress Bar for 24-hour cycle */}
-      <div className="mt-3 pt-2.5 border-t border-[#262626]">
-        <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1">
+      <div className="mt-3 pt-2.5 border-t border-[#31353E]">
+        <div className="flex items-center justify-between text-[10px] font-mono text-[#94A3B8] mb-1">
           <span>Day {cycleStatus.activeDayId} Progress ({Math.round(cycleStatus.progressPercent)}%)</span>
           <span>Automatic shift in {cycleStatus.hoursRemaining}h {cycleStatus.minutesRemaining}m</span>
         </div>
-        <div className="w-full h-1.5 bg-[#1e1e1e] rounded-full overflow-hidden border border-[#2e2e2e]">
+        <div className="w-full h-1.5 bg-[#191D26] rounded-full overflow-hidden border border-[#31353E]">
           <div 
-            className="h-full bg-gradient-to-r from-[#00FF66] to-[#00cc52] shadow-[0_0_8px_#00FF66] transition-all duration-1000 ease-linear rounded-full"
+            className="h-full bg-gradient-to-r from-[#2563EB] to-[#38BDF8] shadow-[0_0_8px_#2563EB] transition-all duration-1000 ease-linear rounded-full"
             style={{ width: `${cycleStatus.progressPercent}%` }}
           />
         </div>
@@ -154,12 +154,12 @@ export const CycleCountdownBar: React.FC<CycleCountdownBarProps> = ({
 
       {/* Info Explanation Sheet if toggled */}
       {showInfo && (
-        <div className="mt-3 p-3 bg-[#1c1c1c] border border-[#2d2d2d] rounded-xl text-xs text-slate-300 space-y-1.5 animate-in fade-in duration-200">
-          <div className="font-bold text-[#00FF66] flex items-center gap-1.5 font-heading">
-            <Sparkles className="w-3.5 h-3.5 text-[#00FF66]" />
+        <div className="mt-3 p-3 bg-[#191D26] border border-[#31353E] rounded-xl text-xs text-slate-300 space-y-1.5 animate-in fade-in duration-200">
+          <div className="font-bold text-[#60A5FA] flex items-center gap-1.5 font-heading">
+            <Sparkles className="w-3.5 h-3.5 text-[#60A5FA]" />
             <span>Endless 24-Hour Adaptive Split Cycle</span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-[#94A3B8] leading-relaxed">
             Your workout cycle begins strictly on <strong>Day 1 (Chest Day)</strong>. Every 24 hours, the protocol automatically shifts to the next sequential muscle group (Chest ➔ Back & Shoulders ➔ Arms ➔ Legs ➔ Core ➔ Recovery ➔ Rest ➔ repeats endlessly). You can preview any day in advance or restart from Day 1 anytime.
           </p>
         </div>
